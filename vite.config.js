@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://lifestealpvp.xyz',
+        target: 'https://api.lifestealpvp.xyz',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api/v1'),
       },
