@@ -1,3 +1,4 @@
+// components/GamemodeTabs.js
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getTabIcon } from "./tabicons";
@@ -69,11 +70,6 @@ const styles = {
     display: "flex",
     justifyContent: "flex-start",
     gap: "0.3rem",
-    marginBottom: "0",
-    paddingLeft: "2rem",
-    paddingRight: "2rem",
-    position: "relative",
-    zIndex: 2,
   },
   tab: {
     display: "flex",

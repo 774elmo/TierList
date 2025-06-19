@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
+import PageHeader from "../components/pageheader"; // <- import the header
 import SearchBar from "../components/searchbar";
 
 import HT1 from "../assets/HT1.webp";
@@ -54,6 +55,20 @@ function getDarkRegionColor(region) {
   }
 }
 
+// Simple in-file cache for fetch responses
+const fetchCache = {};
+
+async function cachedFetch(url) {
+  if (fetchCache[url]) {
+    return fetchCache[url];
+  }
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to fetch: ${url}`);
+  const data = await response.json();
+  fetchCache[url] = data;
+  return data;
+}
+
 export default function Lifesteal() {
   const { gamemode: rawGamemode } = useParams();
   const navigate = useNavigate();
@@ -73,14 +88,15 @@ export default function Lifesteal() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const resGamemode = await fetch(
-          `https://lifestealpvp.xyz/api/v1/data?gamemode=${gamemode}`
-        );
-        const dataGamemode = await resGamemode.json();
-        setPlayers(dataGamemode);
+        const gamemodeUrl = `https://lifestealpvp.xyz/api/v1/data?gamemode=${gamemode}`;
+        const overallUrl = "https://lifestealpvp.xyz/api/v1/data";
 
-        const resOverall = await fetch("https://lifestealpvp.xyz/api/v1/data");
-        const dataOverall = await resOverall.json();
+        const [dataGamemode, dataOverall] = await Promise.all([
+          cachedFetch(gamemodeUrl),
+          cachedFetch(overallUrl),
+        ]);
+
+        setPlayers(dataGamemode);
         setOverallPlayers(dataOverall);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -111,15 +127,15 @@ export default function Lifesteal() {
     }
   }
 
-return (
-  <div style={styles.outerWrapper}>
-    <div style={styles.headerWrapper}>
-      <GamemodeTabs />
-      <div style={styles.searchWrapper}>
+  return (
+    <div style={styles.outerWrapper}>
+      {/* Reusable Header */}
+      <PageHeader>
+        <GamemodeTabs />
         <SearchBar />
-      </div>
-    </div>
+      </PageHeader>
 
+      {/* Page Content */}
       <div style={styles.container}>
         {[1, 2, 3, 4, 5].map((num, idx) => {
           const tier = tierData[num - 1];
@@ -375,17 +391,4 @@ const styles = {
     paddingLeft: 8,
     fontSize: 14,
   },
-headerWrapper: {
-  maxWidth: 1150,
-  margin: "0 auto",
-  display: "flex",
-  justifyContent: "space-between",
-  gap: "1rem", // optional, to space nicely between tabs and search bar
-},
-searchWrapper: {
-  // no positioning, just flex item
-  display: "flex",
-  alignItems: "center",
-},
-
 };

@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getGamemodeIcon } from "../components/gamemodeicons";
 import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
-import SearchBar from "../components/searchbar";
-
+import PageHeader from "../components/pageheader";
+import SearchBar from "./searchbar";
 
 const validGamemodes = ["lifesteal", "trident_mace"];
 
@@ -61,7 +61,10 @@ function getShimmerUrl(position) {
   return shimmerUrls[position] || shimmerUrls.other;
 }
 
-const cache = {};
+// LocalStorage cache key prefix
+const STORAGE_KEY_PREFIX = "leaderboard_cache_";
+// Cache expiration time in milliseconds (e.g. 10 minutes)
+const CACHE_EXPIRATION = 10 * 60 * 1000;
 
 export default function Leaderboard() {
   const { gamemode: rawGamemode } = useParams();
@@ -72,8 +75,7 @@ export default function Leaderboard() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [selectedPlayer, setSelectedPlayer] = useState(null); // 👈 added
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const isMounted = useRef(true);
 
@@ -84,6 +86,40 @@ export default function Leaderboard() {
     };
   }, []);
 
+  // Helper: get cached data from localStorage if valid (not expired)
+  function getCachedData(mode) {
+    try {
+      const cachedString = localStorage.getItem(STORAGE_KEY_PREFIX + mode);
+      if (!cachedString) return null;
+
+      const cachedObj = JSON.parse(cachedString);
+      if (!cachedObj.timestamp || !cachedObj.data) return null;
+
+      // Check if cache expired
+      if (Date.now() - cachedObj.timestamp > CACHE_EXPIRATION) {
+        localStorage.removeItem(STORAGE_KEY_PREFIX + mode);
+        return null;
+      }
+
+      return cachedObj.data;
+    } catch {
+      return null;
+    }
+  }
+
+  // Helper: save data to localStorage with timestamp
+  function setCachedData(mode, data) {
+    try {
+      const cacheObj = {
+        timestamp: Date.now(),
+        data,
+      };
+      localStorage.setItem(STORAGE_KEY_PREFIX + mode, JSON.stringify(cacheObj));
+    } catch {
+      // ignore localStorage write errors (e.g. quota exceeded)
+    }
+  }
+
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -93,8 +129,9 @@ export default function Leaderboard() {
       return;
     }
 
-    if (cache[gamemode]) {
-      setPlayers(cache[gamemode]);
+    const cachedData = getCachedData(gamemode);
+    if (cachedData) {
+      setPlayers(cachedData);
       setLoading(false);
       return;
     }
@@ -109,8 +146,8 @@ export default function Leaderboard() {
       })
       .then((data) => {
         if (!isMounted.current) return;
-        cache[gamemode] = data;
         setPlayers(data);
+        setCachedData(gamemode, data);
         setLoading(false);
       })
       .catch(() => {
@@ -139,13 +176,13 @@ export default function Leaderboard() {
               key={player.username}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              onClick={() => setSelectedPlayer(player)} // 👈 make row clickable
+              onClick={() => setSelectedPlayer(player)}
               style={{
                 ...styles.row,
                 backgroundColor: isHovered ? "#1f2937" : "#161E29",
                 transform: isHovered ? "translateX(-4px)" : "translateX(0)",
                 transition: "all 0.2s ease",
-                cursor: "pointer", // 👈 change cursor to pointer
+                cursor: "pointer",
               }}
             >
               <div style={styles.ribbon}>
@@ -251,16 +288,17 @@ export default function Leaderboard() {
 
   return (
     <div style={styles.outerWrapper}>
-    <div style={styles.headerWrapper}>
+      {/* ✅ Reusable Page Header */}
+      <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
-        <div style={styles.searchWrapper}>
         <SearchBar />
-        </div>
-    </div>
-    <div style={styles.container}>{renderOverall()}</div>
-    {selectedPlayer && (
+      </PageHeader>
+
+      <div style={styles.container}>{renderOverall()}</div>
+
+      {selectedPlayer && (
         <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
-    )}
+      )}
     </div>
   );
 }
@@ -480,17 +518,4 @@ const styles = {
     marginTop: -5,
     userSelect: "none",
   },
-  headerWrapper: {
-  maxWidth: 1150,
-  margin: "0 auto",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "1rem", // optional for spacing
-},
-searchWrapper: {
-  display: "flex",
-  alignItems: "center",
-  // you can add width, maxWidth or other styling if needed
-},
 };

@@ -9,7 +9,7 @@ export default function SearchBar() {
 
   const errorTimeoutRef = useRef(null);
 
-  // Fetch all players once on mount (cache data)
+  // Cache all players on mount
   const [allPlayers, setAllPlayers] = useState([]);
   useEffect(() => {
     async function fetchAllPlayers() {
@@ -24,31 +24,26 @@ export default function SearchBar() {
     }
     fetchAllPlayers();
 
-    // Cleanup on unmount
+    // Cleanup error timeout on unmount
     return () => {
       if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
     };
   }, []);
 
-  // Start 2-second timeout to clear error
+  // 2-second timeout to clear errors
   function startErrorTimeout() {
     if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
-    errorTimeoutRef.current = setTimeout(() => {
-      setError("");
-    }, 2000);
+    errorTimeoutRef.current = setTimeout(() => setError(""), 2000);
   }
 
-  // Search player by username on submit or enter
   function handleSearch(e) {
     e.preventDefault();
-    setError("");
-    setPlayerData(null);
-
     if (!searchText.trim()) return;
 
+    setError("");
+    setPlayerData(null);
     setLoading(true);
 
-    // Case insensitive search
     const found = allPlayers.find(
       (p) => p.username.toLowerCase() === searchText.toLowerCase()
     );
@@ -57,14 +52,13 @@ export default function SearchBar() {
       setPlayerData(found);
     } else {
       setError("Player not found");
-      setSearchText(""); // Clear input immediately on error
+      setSearchText("");
       startErrorTimeout();
     }
 
     setLoading(false);
   }
 
-  // Close overlay handler
   function closeOverlay() {
     setPlayerData(null);
     setSearchText("");
@@ -77,16 +71,16 @@ export default function SearchBar() {
       <form
         onSubmit={handleSearch}
         style={{ position: "relative", display: "flex", alignItems: "center" }}
-        aria-label="Search Player..."
+        aria-label="Search Player"
       >
         <input
           type="text"
-          placeholder={error ? "" : "Search Player..."} // Hide placeholder on error
+          placeholder={error ? "" : "Search Player..."}
           value={searchText}
           onChange={(e) => {
             setSearchText(e.target.value);
             if (error) {
-              setError(""); // Clear error on typing
+              setError("");
               if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
             }
           }}
@@ -104,10 +98,21 @@ export default function SearchBar() {
           }}
           spellCheck={false}
           onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
-          onBlur={(e) =>
-            (e.target.style.borderColor = error ? "#ef4444" : "#1f2937")
-          }
+          onBlur={(e) => (e.target.style.borderColor = error ? "#ef4444" : "#1f2937")}
         />
+
+        {loading && (
+          <div
+            style={{
+              position: "absolute",
+              right: -30,
+              color: "#e5e7eb",
+              fontSize: 14,
+            }}
+          >
+            Loading...
+          </div>
+        )}
 
         {error && (
           <div
@@ -129,9 +134,7 @@ export default function SearchBar() {
         )}
       </form>
 
-      {playerData && (
-        <ProfileOverlay player={playerData} onClose={closeOverlay} />
-      )}
+      {playerData && <ProfileOverlay player={playerData} onClose={closeOverlay} />}
     </>
   );
 }
