@@ -136,7 +136,7 @@ export default function Leaderboard() {
       return;
     }
 
-    const baseUrl = "https://lifestealpvp.xyz/api/v1/data";
+    const baseUrl = "https://api.lifestealpvp.xyz/api/v1/data";
     const url = gamemode === "overall" ? baseUrl : `${baseUrl}?gamemode=${gamemode}`;
 
     fetch(url)

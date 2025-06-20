@@ -88,8 +88,8 @@ export default function TridentMace() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const gamemodeUrl = `https://lifestealpvp.xyz/api/v1/data?gamemode=${gamemode}`;
-        const overallUrl = "https://lifestealpvp.xyz/api/v1/data";
+        const gamemodeUrl = `https://api.lifestealpvp.xyz/api/v1/data?gamemode=${gamemode}`;
+        const overallUrl = "https://api.lifestealpvp.xyz/api/v1/data";
 
         const [dataGamemode, dataOverall] = await Promise.all([
           cachedFetch(gamemodeUrl),

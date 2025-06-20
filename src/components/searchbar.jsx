@@ -14,7 +14,7 @@ export default function SearchBar() {
   useEffect(() => {
     async function fetchAllPlayers() {
       try {
-        const res = await fetch("https://lifestealpvp.xyz/api/v1/data");
+        const res = await fetch("https://api.lifestealpvp.xyz/api/v1/data");
         const data = await res.json();
         setAllPlayers(data);
       } catch {
