@@ -1,5 +1,5 @@
 // components/ProfileOverlay.js
-import React from "react";
+import React, { useState } from "react";
 import overallIcon from "../assets/overall.webp";
 import { getGamemodeIcon } from "./gamemodeicons";
 
@@ -58,12 +58,16 @@ function getShimmerUrl(position) {
 }
 
 export default function ProfileOverlay({ player, onClose }) {
+  const [hoveredTierIndex, setHoveredTierIndex] = useState(null);
+
   if (!player) return null;
 
   return (
     <div style={styles.profileOverlay}>
       <div style={styles.profileCard}>
-        <button onClick={onClose} style={styles.closeButton}>×</button>
+        <button onClick={onClose} style={styles.closeButton}>
+          ×
+        </button>
 
         <div style={styles.skinOutline}>
           <img
@@ -103,10 +107,16 @@ export default function ProfileOverlay({ player, onClose }) {
           </div>
           <div style={styles.overallInfo}>
             <img src={overallIcon} alt="overall" style={styles.overallIcon} />
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}
+            >
               <div style={styles.overallText}>OVERALL</div>
               <div style={styles.overallPoints}>
-                ({player.total_points !== undefined && player.total_points !== null ? player.total_points.toLocaleString() : "0"} pts)
+                {`(${
+                  player.total_points !== undefined && player.total_points !== null
+                    ? player.total_points.toLocaleString()
+                    : "0"
+                } pts)`}
               </div>
             </div>
           </div>
@@ -117,14 +127,31 @@ export default function ProfileOverlay({ player, onClose }) {
         <div style={styles.profileTiersCard}>
           {validGamemodes.map((mode, idx) => {
             const kit = (player.kits || []).find(
-              (k) => k.kit_name === mode || k.gamemode === mode || k.name === mode || k.type === mode
+              (k) =>
+                k.kit_name === mode ||
+                k.gamemode === mode ||
+                k.name === mode ||
+                k.type === mode
             );
-            const tierName = kit?.tier_name;
-            const isRanked = !!tierName;
-            const tierColors = getTierColors(tierName);
+            const tierNameRaw = kit?.tier_name;
+            const peakTierNameRaw = kit?.peak_tier_name;
+            const displayTierName =
+                peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                    ? `Peak ${peakTierNameRaw}`
+                    : tierNameRaw || "N/A";
+            const isRetired = kit?.retired === true;
+            const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
+            const isRanked = !!tierNameRaw;
+            const tierColors = getTierColors(tierNameRaw);
+            const points = kit?.points ?? 0;
 
             return (
-              <div key={idx} style={styles.tierBadge}>
+              <div
+                key={idx}
+                style={styles.tierBadge}
+                onMouseEnter={() => setHoveredTierIndex(idx)}
+                onMouseLeave={() => setHoveredTierIndex(null)}
+              >
                 <div style={styles.iconCircleWrapper}>
                   {isRanked ? (
                     <>
@@ -161,6 +188,14 @@ export default function ProfileOverlay({ player, onClose }) {
                 >
                   {isRanked ? tierName : "—"}
                 </div>
+
+                {hoveredTierIndex === idx && (
+                  <div style={styles.tierTooltip}>
+                    <div style={{ fontWeight: "1000", fontSize: 24 }}>{displayTierName || "N/A"}</div>
+
+                    <div>{points.toLocaleString()} points</div>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -334,6 +369,7 @@ const styles = {
     flexWrap: "wrap",
   },
   tierBadge: {
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -369,11 +405,26 @@ const styles = {
   tierName: {
     borderRadius: 15,
     padding: "0px 1px",
-    fontWeight: 900,
-    fontSize: 18,
+    fontWeight: 1000,
+    fontSize: 20,
     minWidth: 42,
     textAlign: "center",
     marginTop: -5,
+    userSelect: "none",
+  },
+  tierTooltip: {
+    position: "absolute",
+    bottom: "110%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "#212B39",
+    color: "#e5e7eb",
+    padding: "6px 10px",
+    borderRadius: 10,
+    whiteSpace: "nowrap",
+    pointerEvents: "none",
+    fontSize: 20,
+    zIndex: 1001,
     userSelect: "none",
   },
 };

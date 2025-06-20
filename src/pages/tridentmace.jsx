@@ -105,18 +105,32 @@ export default function TridentMace() {
     fetchData();
   }, [gamemode]);
 
+  // Return players with filtered non-retired kits per tier+HT/LT
   function getPlayersForTierEnding(ending) {
     return {
-      HT: players.filter((p) =>
-        p.kits.some(
-          (k) => k.kit_name === gamemode && k.tier_name === `HT${ending}`
-        )
-      ),
-      LT: players.filter((p) =>
-        p.kits.some(
-          (k) => k.kit_name === gamemode && k.tier_name === `LT${ending}`
-        )
-      ),
+      HT: players
+        .map((p) => ({
+          player: p,
+          kits: p.kits.filter(
+            (k) =>
+              k.kit_name === gamemode &&
+              k.tier_name === `HT${ending}` &&
+              !k.retired // exclude retired kits only
+          ),
+        }))
+        .filter(({ kits }) => kits.length > 0), // only players with active kits here
+
+      LT: players
+        .map((p) => ({
+          player: p,
+          kits: p.kits.filter(
+            (k) =>
+              k.kit_name === gamemode &&
+              k.tier_name === `LT${ending}` &&
+              !k.retired
+          ),
+        }))
+        .filter(({ kits }) => kits.length > 0),
     };
   }
 
@@ -178,7 +192,7 @@ export default function TridentMace() {
                 </span>
               </div>
 
-              {HT.map((player, i) => {
+              {HT.map(({ player }, i) => {
                 const isLastHT = HT.length > 0 && LT.length === 0 && i === HT.length - 1;
                 const brightColor = getBrightRegionColor(player.region);
                 const darkColor = getDarkRegionColor(player.region);
@@ -245,7 +259,7 @@ export default function TridentMace() {
                 );
               })}
 
-              {LT.map((player, i) => {
+              {LT.map(({ player }, i) => {
                 const isLastLT = i === LT.length - 1;
                 const brightColor = getBrightRegionColor(player.region);
                 const darkColor = getDarkRegionColor(player.region);

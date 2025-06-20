@@ -61,9 +61,7 @@ function getShimmerUrl(position) {
   return shimmerUrls[position] || shimmerUrls.other;
 }
 
-// LocalStorage cache key prefix
 const STORAGE_KEY_PREFIX = "leaderboard_cache_";
-// Cache expiration time in milliseconds (e.g. 10 minutes)
 const CACHE_EXPIRATION = 10 * 60 * 1000;
 
 export default function Leaderboard() {
@@ -73,6 +71,7 @@ export default function Leaderboard() {
 
   const [players, setPlayers] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredTierIndex, setHoveredTierIndex] = useState({ row: null, col: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
@@ -86,7 +85,6 @@ export default function Leaderboard() {
     };
   }, []);
 
-  // Helper: get cached data from localStorage if valid (not expired)
   function getCachedData(mode) {
     try {
       const cachedString = localStorage.getItem(STORAGE_KEY_PREFIX + mode);
@@ -95,7 +93,6 @@ export default function Leaderboard() {
       const cachedObj = JSON.parse(cachedString);
       if (!cachedObj.timestamp || !cachedObj.data) return null;
 
-      // Check if cache expired
       if (Date.now() - cachedObj.timestamp > CACHE_EXPIRATION) {
         localStorage.removeItem(STORAGE_KEY_PREFIX + mode);
         return null;
@@ -107,17 +104,11 @@ export default function Leaderboard() {
     }
   }
 
-  // Helper: save data to localStorage with timestamp
   function setCachedData(mode, data) {
     try {
-      const cacheObj = {
-        timestamp: Date.now(),
-        data,
-      };
+      const cacheObj = { timestamp: Date.now(), data };
       localStorage.setItem(STORAGE_KEY_PREFIX + mode, JSON.stringify(cacheObj));
-    } catch {
-      // ignore localStorage write errors (e.g. quota exceeded)
-    }
+    } catch {}
   }
 
   useEffect(() => {
@@ -175,7 +166,10 @@ export default function Leaderboard() {
             <div
               key={player.username}
               onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              onMouseLeave={() => {
+                setHoveredIndex(null);
+                setHoveredTierIndex({ row: null, col: null });
+              }}
               onClick={() => setSelectedPlayer(player)}
               style={{
                 ...styles.row,
@@ -218,11 +212,27 @@ export default function Leaderboard() {
                       k.name === mode ||
                       k.type === mode
                   );
-                  const tierName = kit?.tier_name;
-                  const isRanked = !!tierName;
-                  const tierColors = getTierColors(tierName);
+                  const tierNameRaw = kit?.tier_name;
+                  const peakTierNameRaw = kit?.peak_tier_name;
+                  const displayTierName =
+                    peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                      ? `Peak ${peakTierNameRaw}`
+                      : tierNameRaw || "N/A";
+                  const isRetired = kit?.retired === true;
+                  const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
+                  const isRanked = !!tierNameRaw;
+                  const tierColors = getTierColors(tierNameRaw);
+                  const points = kit?.points ?? 0;
+
+                  const showTooltip = hoveredTierIndex.row === index && hoveredTierIndex.col === idx;
+
                   return (
-                    <div key={idx} style={styles.tierBadge}>
+                    <div
+                      key={idx}
+                      style={styles.tierBadge}
+                      onMouseEnter={() => setHoveredTierIndex({ row: index, col: idx })}
+                      onMouseLeave={() => setHoveredTierIndex({ row: null, col: null })}
+                    >
                       <div style={styles.iconCircleWrapper}>
                         {isRanked ? (
                           <>
@@ -259,6 +269,13 @@ export default function Leaderboard() {
                       >
                         {isRanked ? tierName : "—"}
                       </div>
+
+                      {showTooltip && (
+                        <div style={styles.tierTooltip}>
+                          <div style={{ fontWeight: "1000", fontSize: 18 }}>{displayTierName || "N/A"}</div>
+                          <div>{points.toLocaleString()} points</div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -288,7 +305,6 @@ export default function Leaderboard() {
 
   return (
     <div style={styles.outerWrapper}>
-      {/* ✅ Reusable Page Header */}
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
         <SearchBar />
@@ -476,6 +492,7 @@ const styles = {
     gap: 16,
   },
   tierBadge: {
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -517,5 +534,22 @@ const styles = {
     textAlign: "center",
     marginTop: -5,
     userSelect: "none",
+  },
+  tierTooltip: {
+    position: "absolute",
+    bottom: "110%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "#212B39",
+    color: "#e5e7eb",
+    padding: "6px 10px",
+    borderRadius: 10,
+    whiteSpace: "nowrap",
+    pointerEvents: "none",
+    fontSize: 14,
+    zIndex: 1001,
+    userSelect: "none",
+    alignItems: "center",
+    textAlign: "center",   
   },
 };
