@@ -1,4 +1,3 @@
-// components/ProfileOverlay.js
 import React, { useState } from "react";
 import overallIcon from "../assets/overall.webp";
 import { getGamemodeIcon } from "./gamemodeicons";
@@ -105,21 +104,19 @@ export default function ProfileOverlay({ player, onClose }) {
             />
             <span style={styles.positionNumberProfile}>{player.position}</span>
           </div>
-          <div style={styles.overallInfo}>
-            <img src={overallIcon} alt="overall" style={styles.overallIcon} />
-            <div
-              style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}
-            >
-              <div style={styles.overallText}>OVERALL</div>
-              <div style={styles.overallPoints}>
-                {`(${
-                  player.total_points !== undefined && player.total_points !== null
-                    ? player.total_points.toLocaleString()
-                    : "0"
-                } pts)`}
-              </div>
+          <div
+            style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            <div style={styles.overallText}>OVERALL</div>
+            <div style={styles.overallPoints}>
+              {`(${
+                player.total_points !== undefined && player.total_points !== null
+                  ? player.total_points.toLocaleString()
+                  : "0"
+              } pts)`}
             </div>
           </div>
+          <img src={overallIcon} alt="overall" style={styles.overallIcon} />
         </div>
 
         <div style={styles.sectionHeader}>TIERS</div>
@@ -136,9 +133,9 @@ export default function ProfileOverlay({ player, onClose }) {
             const tierNameRaw = kit?.tier_name;
             const peakTierNameRaw = kit?.peak_tier_name;
             const displayTierName =
-                peakTierNameRaw && peakTierNameRaw !== tierNameRaw
-                    ? `Peak ${peakTierNameRaw}`
-                    : tierNameRaw || "N/A";
+              peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                ? `Peak ${peakTierNameRaw}`
+                : tierNameRaw || "N/A";
             const isRetired = kit?.retired === true;
             const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
             const isRanked = !!tierNameRaw;
@@ -210,24 +207,28 @@ const styles = {
     position: "fixed",
     top: 0,
     left: 0,
-    width: "100%",
-    height: "100%",
+    width: "100vw",
+    height: "100vh",
     backgroundColor: "rgba(0, 0, 0, 0.8)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
+    padding: "1rem",
+    boxSizing: "border-box",
+    overflowY: "auto",
   },
   profileCard: {
     backgroundColor: "#121821",
     padding: "2rem",
     borderRadius: 16,
-    width: "90%",
+    width: "100%",
     maxWidth: 600,
     color: "#e5e7eb",
     border: "2px solid #1f2937",
     textAlign: "center",
     position: "relative",
+    boxSizing: "border-box",
   },
   closeButton: {
     position: "absolute",
@@ -250,6 +251,7 @@ const styles = {
     height: 108,
     boxSizing: "border-box",
     overflow: "hidden",
+    margin: "0 auto",
   },
   profileSkin: {
     width: "100%",
@@ -264,9 +266,10 @@ const styles = {
     fontWeight: "800",
     marginTop: 8,
     color: "#ffffff",
+    wordBreak: "break-word",
   },
   region: {
-    fontSize: 25,
+    fontSize: 20,
     padding: "6px 8px",
     borderRadius: 12,
     minWidth: 35,
@@ -274,7 +277,7 @@ const styles = {
     textTransform: "uppercase",
     userSelect: "none",
     fontWeight: "800",
-    display: "flex",
+    display: "inline-flex",
     justifyContent: "center",
     alignItems: "center",
     lineHeight: 1,
@@ -282,9 +285,9 @@ const styles = {
   },
   sectionHeader: {
     fontWeight: "700",
-    fontSize: 35,
+    fontSize: 28,
     textAlign: "left",
-    marginBottom: 4,
+    marginBottom: 8,
     marginLeft: 4,
     color: "#9ca3af",
     userSelect: "none",
@@ -296,8 +299,10 @@ const styles = {
     border: "2px solid #1f2937",
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
-    gap: 24,
+    justifyContent: "space-between",
+    gap: 20,
+    padding: "10px 16px",
+    flexWrap: "wrap",
   },
   ribbonProfile: {
     position: "relative",
@@ -362,7 +367,7 @@ const styles = {
     backgroundColor: "#18202C",
     borderRadius: 12,
     border: "2px solid #1f2937",
-    padding: "1rem 2rem",
+    padding: "1rem 1rem",
     display: "flex",
     justifyContent: "center",
     gap: 24,
@@ -404,9 +409,9 @@ const styles = {
   },
   tierName: {
     borderRadius: 15,
-    padding: "0px 1px",
-    fontWeight: 1000,
-    fontSize: 20,
+    padding: "0 6px",
+    fontWeight: 700,
+    fontSize: 18,
     minWidth: 42,
     textAlign: "center",
     marginTop: -5,
@@ -423,7 +428,7 @@ const styles = {
     borderRadius: 10,
     whiteSpace: "nowrap",
     pointerEvents: "none",
-    fontSize: 20,
+    fontSize: 16,
     zIndex: 1001,
     userSelect: "none",
   },

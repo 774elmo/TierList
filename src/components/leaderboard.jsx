@@ -148,6 +148,9 @@ export default function Leaderboard() {
       });
   }, [gamemode, navigate]);
 
+  // Detect mobile viewport once (on render)
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 640;
+
   function renderOverall() {
     return (
       <>
@@ -178,6 +181,7 @@ export default function Leaderboard() {
                 transform: isHovered ? "translateX(-4px)" : "translateX(0)",
                 transition: "all 0.2s ease",
                 cursor: "pointer",
+                minWidth: 600,
               }}
             >
               <div style={styles.ribbon}>
@@ -265,6 +269,7 @@ export default function Leaderboard() {
                           ...styles.tierName,
                           backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
                           color: isRanked ? tierColors.color : "#354153",
+                          fontSize: isMobile ? 14 : 18,
                         }}
                         title={tierName || "Unranked"}
                       >
@@ -273,7 +278,7 @@ export default function Leaderboard() {
 
                       {showTooltip && (
                         <div style={styles.tierTooltip}>
-                          <div style={{ fontWeight: "1000", fontSize: 18 }}>{displayTierName || "N/A"}</div>
+                          <div style={{ fontWeight: "1000", fontSize: isMobile ? 14 : 18 }}>{displayTierName || "N/A"}</div>
                           <div>{points.toLocaleString()} points</div>
                         </div>
                       )}
@@ -328,18 +333,22 @@ const styles = {
   outerWrapper: {
     backgroundColor: "#121821",
     paddingTop: "4rem",
+    paddingLeft: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 0,
+    paddingRight: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 0,
   },
   container: {
     maxWidth: 1200,
     margin: "0 auto 3rem auto",
-    padding: "3rem 2rem 2rem",
+    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "1.5rem 1rem" : "3rem 2rem 2rem",
     backgroundColor: "#121821",
     borderRadius: 24,
     border: "2px solid #1f2937",
     color: "#e5e7eb",
-    fontSize: 20,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 20,
     position: "relative",
     zIndex: 1,
+    overflowX: "auto",
+    WebkitOverflowScrolling: "touch",
   },
   message: {
     textAlign: "center",
@@ -363,45 +372,49 @@ const styles = {
   },
   headerRow: {
     display: "flex",
-    padding: "0 1rem",
+    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "0 0.5rem" : "0 1rem",
     color: "#9ca3af",
     fontWeight: "700",
-    fontSize: 20,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 20,
     textTransform: "uppercase",
     alignItems: "center",
-    gap: 24,
-    height: 70,
+    gap: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 24,
+    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
+    minWidth: 600,
   },
   ribbonHeaderCol: {
-    width: 150,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 90 : 150,
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
   },
   hashHeader: {
-    fontSize: 20,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 20,
     fontWeight: 700,
     fontStyle: "italic",
     color: "#9ca3af",
-    paddingLeft: 14,
+    paddingLeft: typeof window !== "undefined" && window.innerWidth <= 640 ? 10 : 14,
   },
   usernameCol: {
-    width: 280,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 150 : 280,
     fontWeight: 700,
-    fontSize: 20,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 20,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   regionCol: {
-    width: 200,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 120 : 200,
     fontWeight: 700,
-    fontSize: 20,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 20,
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
   },
   tierCol: {
-    width: 300,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 180 : 300,
     fontWeight: 700,
-    fontSize: 20,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 20,
     textAlign: "center",
     display: "flex",
     justifyContent: "center",
@@ -410,18 +423,19 @@ const styles = {
   row: {
     display: "flex",
     alignItems: "center",
-    padding: "1rem 1rem",
+    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "0.5rem 0.5rem" : "1rem 1rem",
     borderRadius: 12,
     border: "2px solid #1f2937",
     marginBottom: 12,
-    gap: 24,
-    minHeight: 70,
+    gap: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 24,
+    minHeight: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
     cursor: "default",
+    minWidth: 600,
   },
   ribbon: {
     position: "relative",
-    width: 150,
-    height: 70,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 90 : 150,
+    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
     borderRadius: 8,
     overflow: "visible",
     flexShrink: 0,
@@ -432,8 +446,8 @@ const styles = {
     position: "absolute",
     top: 0,
     left: 0,
-    width: 150,
-    height: 70,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 90 : 150,
+    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
     borderRadius: 8,
     objectFit: "cover",
     pointerEvents: "none",
@@ -443,9 +457,9 @@ const styles = {
   positionNumber: {
     position: "absolute",
     top: "50%",
-    left: 14,
+    left: typeof window !== "undefined" && window.innerWidth <= 640 ? 8 : 14,
     transform: "translateY(-50%)",
-    fontSize: 42,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 24 : 42,
     fontWeight: 700,
     fontStyle: "italic",
     color: "#ffffff",
@@ -456,26 +470,26 @@ const styles = {
   skinImageInRibbon: {
     position: "absolute",
     top: "50%",
-    right: 30,
+    right: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 30,
     transform: "translateY(-50%)",
-    width: 70,
-    height: 70,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 40 : 70,
+    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 40 : 70,
     borderRadius: 8,
     zIndex: 2,
     userSelect: "none",
     boxShadow: "none",
   },
   usernameColRow: {
-    width: 280,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 150 : 280,
     fontWeight: 800,
-    fontSize: 25,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 25,
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
   region: {
-    fontSize: 25,
-    padding: "6px 8px",
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 25,
+    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "3px 5px" : "6px 8px",
     borderRadius: 12,
     minWidth: 35,
     textAlign: "center",
@@ -489,12 +503,12 @@ const styles = {
     marginLeft: 5,
   },
   tierColRow: {
-    width: 300,
+    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 180 : 300,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     minWidth: 90,
-    gap: 16,
+    gap: typeof window !== "undefined" && window.innerWidth <= 640 ? 8 : 16,
   },
   tierBadge: {
     position: "relative",
@@ -534,7 +548,7 @@ const styles = {
     borderRadius: 15,
     padding: "0px 1px",
     fontWeight: 900,
-    fontSize: 18,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 18,
     minWidth: 42,
     textAlign: "center",
     marginTop: -5,
@@ -551,10 +565,10 @@ const styles = {
     borderRadius: 10,
     whiteSpace: "nowrap",
     pointerEvents: "none",
-    fontSize: 14,
+    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 14,
     zIndex: 1001,
     userSelect: "none",
     alignItems: "center",
-    textAlign: "center",   
+    textAlign: "center",
   },
 };

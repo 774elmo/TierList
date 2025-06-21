@@ -1,4 +1,3 @@
-// components/PageHeader.js
 import React from "react";
 
 export default function PageHeader({ children }) {
@@ -11,15 +10,16 @@ export default function PageHeader({ children }) {
 
 const styles = {
   wrapper: {
-    maxWidth: 1150,
+    maxWidth: "100%",
     margin: "0 auto",
-    padding: "0 2rem",
+    padding: "0 1rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     gap: "1rem",
-    height: 60,  // fixed height for consistent header size
-    backgroundColor: "#121821", // or your header bg color
+    height: 60,
+    backgroundColor: "#121821",
     boxSizing: "border-box",
+    flexWrap: "wrap",
   },
 };
