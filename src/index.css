@@ -39,3 +39,29 @@ tr:nth-child(even) {
 button {
   border-radius: 4px;
 }
+
+/* Mobile Leaderboard Responsiveness */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 1rem;
+  }
+
+  .leaderboard-header,
+  .leaderboard-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 1rem;
+  }
+
+  /* Override fixed widths only on mobile */
+  .leaderboard-header > div,
+  .leaderboard-row > div {
+    width: 100% !important;
+  }
+
+  /* Disable hover transform slide on mobile */
+  .leaderboard-row {
+    transform: none !important;
+  }
+}

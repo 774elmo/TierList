@@ -151,7 +151,7 @@ export default function Leaderboard() {
   function renderOverall() {
     return (
       <>
-        <div style={styles.headerRow}>
+        <div style={styles.headerRow} className="leaderboard-header">
           <div style={styles.ribbonHeaderCol}>
             <span style={styles.hashHeader}>#</span>
           </div>
@@ -171,6 +171,7 @@ export default function Leaderboard() {
                 setHoveredTierIndex({ row: null, col: null });
               }}
               onClick={() => setSelectedPlayer(player)}
+              className="leaderboard-row"
               style={{
                 ...styles.row,
                 backgroundColor: isHovered ? "#1f2937" : "#161E29",
@@ -310,10 +311,11 @@ export default function Leaderboard() {
         <SearchBar />
       </PageHeader>
 
-    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-       <div style={styles.container}>{renderOverall()}</div>
-    </div>
-
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+        <div className="leaderboard-container" style={styles.container}>
+          {renderOverall()}
+        </div>
+      </div>
 
       {selectedPlayer && (
         <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
