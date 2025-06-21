@@ -5,7 +5,6 @@ import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
 import PageHeader from "../components/pageheader";
 import SearchBar from "./searchbar";
-import "../components/leaderboard.css";
 
 const validGamemodes = ["lifesteal", "trident_mace"];
 
@@ -77,21 +76,12 @@ export default function Leaderboard() {
   const [error, setError] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth <= 640 : false
-  );
-
   const isMounted = useRef(true);
 
   useEffect(() => {
     isMounted.current = true;
-    function handleResize() {
-      setIsMobile(window.innerWidth <= 640);
-    }
-    window.addEventListener("resize", handleResize);
     return () => {
       isMounted.current = false;
-      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -161,13 +151,13 @@ export default function Leaderboard() {
   function renderOverall() {
     return (
       <>
-        <div className="leaderboard-header">
-          <div className="ribbon-header-col">
-            <span className="hash-header">#</span>
+        <div style={styles.headerRow}>
+          <div style={styles.ribbonHeaderCol}>
+            <span style={styles.hashHeader}>#</span>
           </div>
-          <div className="username-col">Player</div>
-          <div className="region-col">Region</div>
-          <div className="tier-col">Tiers</div>
+          <div style={styles.usernameCol}>Player</div>
+          <div style={styles.regionCol}>Region</div>
+          <div style={styles.tierCol}>Tiers</div>
         </div>
         {players.map((player, index) => {
           const shimmerUrl = getShimmerUrl(player.position);
@@ -181,36 +171,31 @@ export default function Leaderboard() {
                 setHoveredTierIndex({ row: null, col: null });
               }}
               onClick={() => setSelectedPlayer(player)}
-              className="leaderboard-row"
               style={{
+                ...styles.row,
                 backgroundColor: isHovered ? "#1f2937" : "#161E29",
                 transform: isHovered ? "translateX(-4px)" : "translateX(0)",
-                cursor: "pointer",
                 transition: "all 0.2s ease",
+                cursor: "pointer",
               }}
             >
-              <div className="ribbon">
-                <img
-                  src={shimmerUrl}
-                  alt="shimmer"
-                  className="shimmer-image"
-                  draggable={false}
-                />
-                <span className="position-number">{player.position}</span>
+              <div style={styles.ribbon}>
+                <img src={shimmerUrl} alt="shimmer" style={styles.shimmerImage} draggable={false} />
+                <span style={styles.positionNumber}>{player.position}</span>
                 <img
                   src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
                   alt={player.username}
-                  className="skin-image-in-ribbon"
+                  style={styles.skinImageInRibbon}
                   draggable={false}
                 />
               </div>
-              <div className="username-col-row" title={player.username}>
+              <div style={styles.usernameColRow} title={player.username}>
                 {player.username}
               </div>
-              <div className="region-col">
+              <div style={styles.regionCol}>
                 <div
-                  className="region"
                   style={{
+                    ...styles.region,
                     backgroundColor: regionColor(player.region),
                     color: regionTextColor(player.region),
                   }}
@@ -218,7 +203,7 @@ export default function Leaderboard() {
                   {player.region || "N/A"}
                 </div>
               </div>
-              <div className="tier-col-row">
+              <div style={styles.tierColRow}>
                 {validGamemodes.map((mode, idx) => {
                   const kit = (player.kits || []).find(
                     (k) =>
@@ -244,36 +229,41 @@ export default function Leaderboard() {
                   return (
                     <div
                       key={idx}
-                      className="tier-badge"
+                      style={styles.tierBadge}
                       onMouseEnter={() => setHoveredTierIndex({ row: index, col: idx })}
                       onMouseLeave={() => setHoveredTierIndex({ row: null, col: null })}
                     >
-                      <div className="icon-circle-wrapper">
+                      <div style={styles.iconCircleWrapper}>
                         {isRanked ? (
                           <>
                             <img
                               src={getGamemodeIcon(mode)}
                               alt="tier icon"
-                              className="tier-icon"
+                              style={styles.tierIcon}
                             />
                             <div
-                              className="icon-outline"
-                              style={{ borderColor: tierColors.backgroundColor, borderStyle: "solid" }}
+                              style={{
+                                ...styles.iconOutline,
+                                borderColor: tierColors.backgroundColor,
+                                borderStyle: "solid",
+                              }}
                             />
                           </>
                         ) : (
                           <div
-                            className="icon-outline"
-                            style={{ borderColor: "#354153", borderStyle: "dotted" }}
+                            style={{
+                              ...styles.iconOutline,
+                              borderColor: "#354153",
+                              borderStyle: "dotted",
+                            }}
                           />
                         )}
                       </div>
                       <div
-                        className="tier-name"
                         style={{
+                          ...styles.tierName,
                           backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
                           color: isRanked ? tierColors.color : "#354153",
-                          fontSize: isMobile ? 14 : 18,
                         }}
                         title={tierName || "Unranked"}
                       >
@@ -281,8 +271,8 @@ export default function Leaderboard() {
                       </div>
 
                       {showTooltip && (
-                        <div className="tier-tooltip" style={{ fontSize: isMobile ? 14 : 18 }}>
-                          <div style={{ fontWeight: "1000" }}>{displayTierName || "N/A"}</div>
+                        <div style={styles.tierTooltip}>
+                          <div style={{ fontWeight: "1000", fontSize: 18 }}>{displayTierName || "N/A"}</div>
                           <div>{points.toLocaleString()} points</div>
                         </div>
                       )}
@@ -299,30 +289,29 @@ export default function Leaderboard() {
 
   if (loading) {
     return (
-      <div className="loading-wrapper">
-        <p className="loading-text">Loading Tiers</p>
-        <img src="/assets/loading.gif" alt="loading" className="loading-gif" />
+      <div style={styles.loadingWrapper}>
+        <p style={styles.loadingText}>Loading Tiers</p>
+        <img src="/assets/loading.gif" alt="loading" style={styles.loadingGif} />
       </div>
     );
   }
 
-  if (error) {
+  if (error)
     return (
-      <p className="message" style={{ color: "#ef4444" }}>
+      <p style={{ ...styles.message, color: "#ef4444" }}>
         {error}
       </p>
     );
-  }
 
   return (
-    <div className="outer-wrapper">
+    <div style={styles.outerWrapper}>
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
         <SearchBar />
       </PageHeader>
 
-      <div className="scroll-wrapper">
-        <div className="container">{renderOverall()}</div>
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+        <div style={styles.container}>{renderOverall()}</div>
       </div>
 
       {selectedPlayer && (
@@ -331,3 +320,238 @@ export default function Leaderboard() {
     </div>
   );
 }
+
+const styles = {
+  outerWrapper: {
+    backgroundColor: "#121821",
+    paddingTop: "4rem",
+  },
+  container: {
+    maxWidth: 1200,
+    margin: "0 auto 3rem auto",
+    padding: "3rem 2rem 2rem",
+    backgroundColor: "#121821",
+    borderRadius: 24,
+    border: "2px solid #1f2937",
+    color: "#e5e7eb",
+    fontSize: 20,
+    position: "relative",
+    zIndex: 1,
+  },
+  message: {
+    textAlign: "center",
+    fontSize: "1.25rem",
+  },
+  loadingWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "4rem 0",
+  },
+  loadingText: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    marginBottom: "1.5rem",
+  },
+  loadingGif: {
+    width: 60,
+    height: 60,
+  },
+  headerRow: {
+    display: "flex",
+    padding: "0 1rem",
+    color: "#9ca3af",
+    fontWeight: "700",
+    fontSize: 20,
+    textTransform: "uppercase",
+    alignItems: "center",
+    gap: 24,
+    height: 70,
+  },
+  ribbonHeaderCol: {
+    width: 150,
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  hashHeader: {
+    fontSize: 20,
+    fontWeight: 700,
+    fontStyle: "italic",
+    color: "#9ca3af",
+    paddingLeft: 14,
+  },
+  usernameCol: {
+    width: 280,
+    fontWeight: 700,
+    fontSize: 20,
+  },
+  regionCol: {
+    width: 200,
+    fontWeight: 700,
+    fontSize: 20,
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  tierCol: {
+    width: 300,
+    fontWeight: 700,
+    fontSize: 20,
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  row: {
+    display: "flex",
+    alignItems: "center",
+    padding: "1rem 1rem",
+    borderRadius: 12,
+    border: "2px solid #1f2937",
+    marginBottom: 12,
+    gap: 24,
+    minHeight: 70,
+    cursor: "default",
+  },
+  ribbon: {
+    position: "relative",
+    width: 150,
+    height: 70,
+    borderRadius: 8,
+    overflow: "visible",
+    flexShrink: 0,
+    userSelect: "none",
+    backgroundColor: "transparent",
+  },
+  shimmerImage: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 150,
+    height: 70,
+    borderRadius: 8,
+    objectFit: "cover",
+    pointerEvents: "none",
+    userSelect: "none",
+    zIndex: 0,
+  },
+  positionNumber: {
+    position: "absolute",
+    top: "50%",
+    left: 14,
+    transform: "translateY(-50%)",
+    fontSize: 42,
+    fontWeight: 700,
+    fontStyle: "italic",
+    color: "#ffffff",
+    zIndex: 2,
+    textShadow: "0 0 4px #000, 1px 1px 2px #000",
+    userSelect: "none",
+  },
+  skinImageInRibbon: {
+    position: "absolute",
+    top: "50%",
+    right: 30,
+    transform: "translateY(-50%)",
+    width: 70,
+    height: 70,
+    borderRadius: 8,
+    zIndex: 2,
+    userSelect: "none",
+    boxShadow: "none",
+  },
+  usernameColRow: {
+    width: 280,
+    fontWeight: 800,
+    fontSize: 25,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  region: {
+    fontSize: 25,
+    padding: "6px 8px",
+    borderRadius: 12,
+    minWidth: 35,
+    textAlign: "center",
+    textTransform: "uppercase",
+    userSelect: "none",
+    fontWeight: "800",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    lineHeight: 1,
+    marginLeft: 5,
+  },
+  tierColRow: {
+    width: 300,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minWidth: 90,
+    gap: 16,
+  },
+  tierBadge: {
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 6,
+    flexShrink: 0,
+  },
+  iconCircleWrapper: {
+    position: "relative",
+    width: 32,
+    height: 32,
+  },
+  iconOutline: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 32,
+    height: 32,
+    borderRadius: "50%",
+    border: "2px solid",
+    boxSizing: "border-box",
+    backgroundColor: "transparent",
+  },
+  tierIcon: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    objectFit: "contain",
+    transform: "translate(-50%, -50%)",
+  },
+  tierName: {
+    borderRadius: 15,
+    padding: "0px 1px",
+    fontWeight: 900,
+    fontSize: 18,
+    minWidth: 42,
+    textAlign: "center",
+    marginTop: -5,
+    userSelect: "none",
+  },
+  tierTooltip: {
+    position: "absolute",
+    bottom: "110%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "#212B39",
+    color: "#e5e7eb",
+    padding: "6px 10px",
+    borderRadius: 10,
+    whiteSpace: "nowrap",
+    pointerEvents: "none",
+    fontSize: 14,
+    zIndex: 1001,
+    userSelect: "none",
+    alignItems: "center",
+    textAlign: "center",
+  },
+};
