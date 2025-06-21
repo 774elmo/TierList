@@ -56,34 +56,6 @@ function getShimmerUrl(position) {
   return shimmerUrls[position] || shimmerUrls.other;
 }
 
-function ScaleWrapper({ baseWidth = 600, children }) {
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    function onResize() {
-      const viewportWidth = window.innerWidth;
-      const newScale = Math.min(1, viewportWidth / baseWidth);
-      setScale(newScale);
-    }
-    window.addEventListener("resize", onResize);
-    onResize();
-    return () => window.removeEventListener("resize", onResize);
-  }, [baseWidth]);
-
-  return (
-    <div
-      style={{
-        transformOrigin: "top left",
-        transform: `scale(${scale})`,
-        width: `${100 / scale}%`,
-        margin: scale < 1 ? "0 auto" : "initial",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function ProfileOverlay({ player, onClose }) {
   const [hoveredTierIndex, setHoveredTierIndex] = useState(null);
 
@@ -91,7 +63,15 @@ export default function ProfileOverlay({ player, onClose }) {
 
   return (
     <div style={styles.profileOverlay}>
-      <ScaleWrapper baseWidth={600}>
+      <div
+        style={{
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <div style={styles.profileCard}>
           <button onClick={onClose} style={styles.closeButton}>
             ×
@@ -226,7 +206,7 @@ export default function ProfileOverlay({ player, onClose }) {
             })}
           </div>
         </div>
-      </ScaleWrapper>
+      </div>
     </div>
   );
 }
@@ -253,6 +233,7 @@ const styles = {
     borderRadius: 16,
     width: "100%",
     maxWidth: 600,
+    minWidth: 600, // fix width to prevent squashing on narrow screens
     color: "#e5e7eb",
     border: "2px solid #1f2937",
     textAlign: "center",

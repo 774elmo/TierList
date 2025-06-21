@@ -3,23 +3,25 @@ import React from "react";
 
 export default function PageHeader({ children }) {
   return (
-    <header style={styles.wrapper}>
-      {children}
-    </header>
+    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+      <header style={styles.wrapper}>
+        {children}
+      </header>
+    </div>
   );
 }
 
 const styles = {
   wrapper: {
-    maxWidth: 1150,
+    minWidth: 1150, // enforce minimum width to prevent squashing
     margin: "0 auto",
     padding: "0 2rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     gap: "1rem",
-    height: 60,  // fixed height for consistent header size
-    backgroundColor: "#121821", // or your header bg color
+    height: 60,
+    backgroundColor: "#121821",
     boxSizing: "border-box",
   },
 };
