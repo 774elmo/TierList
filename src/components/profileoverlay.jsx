@@ -56,6 +56,34 @@ function getShimmerUrl(position) {
   return shimmerUrls[position] || shimmerUrls.other;
 }
 
+function ScaleWrapper({ baseWidth = 600, children }) {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    function onResize() {
+      const viewportWidth = window.innerWidth;
+      const newScale = Math.min(1, viewportWidth / baseWidth);
+      setScale(newScale);
+    }
+    window.addEventListener("resize", onResize);
+    onResize();
+    return () => window.removeEventListener("resize", onResize);
+  }, [baseWidth]);
+
+  return (
+    <div
+      style={{
+        transformOrigin: "top left",
+        transform: `scale(${scale})`,
+        width: `${100 / scale}%`,
+        margin: scale < 1 ? "0 auto" : "initial",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function ProfileOverlay({ player, onClose }) {
   const [hoveredTierIndex, setHoveredTierIndex] = useState(null);
 
@@ -63,141 +91,142 @@ export default function ProfileOverlay({ player, onClose }) {
 
   return (
     <div style={styles.profileOverlay}>
-      <div style={styles.profileCard}>
-        <button onClick={onClose} style={styles.closeButton}>
-          ×
-        </button>
+      <ScaleWrapper baseWidth={600}>
+        <div style={styles.profileCard}>
+          <button onClick={onClose} style={styles.closeButton}>
+            ×
+          </button>
 
-        <div style={styles.skinOutline}>
-          <img
-            src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-            alt={player.username}
-            style={styles.profileSkin}
-          />
-        </div>
-
-        <div style={styles.profileUsername}>{player.username}</div>
-
-        <div
-          style={{
-            ...styles.region,
-            margin: "1rem auto",
-            width: "fit-content",
-            fontSize: 20,
-            fontWeight: 700,
-            backgroundColor: regionColor(player.region),
-            color: regionTextColor(player.region),
-          }}
-        >
-          {player.region || "N/A"}
-        </div>
-
-        <div style={styles.sectionHeader}>POSITION</div>
-
-        <div style={styles.profilePositionCard}>
-          <div style={styles.ribbonProfile}>
+          <div style={styles.skinOutline}>
             <img
-              src={getShimmerUrl(player.position)}
-              alt="shimmer"
-              style={styles.shimmerImageProfile}
-              draggable={false}
+              src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+              alt={player.username}
+              style={styles.profileSkin}
             />
-            <span style={styles.positionNumberProfile}>{player.position}</span>
           </div>
+
+          <div style={styles.profileUsername}>{player.username}</div>
+
           <div
-            style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}
+            style={{
+              ...styles.region,
+              margin: "1rem auto",
+              width: "fit-content",
+              fontSize: 20,
+              fontWeight: 700,
+              backgroundColor: regionColor(player.region),
+              color: regionTextColor(player.region),
+            }}
           >
-            <div style={styles.overallText}>OVERALL</div>
-            <div style={styles.overallPoints}>
-              {`(${
-                player.total_points !== undefined && player.total_points !== null
-                  ? player.total_points.toLocaleString()
-                  : "0"
-              } pts)`}
-            </div>
+            {player.region || "N/A"}
           </div>
-          <img src={overallIcon} alt="overall" style={styles.overallIcon} />
-        </div>
 
-        <div style={styles.sectionHeader}>TIERS</div>
+          <div style={styles.sectionHeader}>POSITION</div>
 
-        <div style={styles.profileTiersCard}>
-          {validGamemodes.map((mode, idx) => {
-            const kit = (player.kits || []).find(
-              (k) =>
-                k.kit_name === mode ||
-                k.gamemode === mode ||
-                k.name === mode ||
-                k.type === mode
-            );
-            const tierNameRaw = kit?.tier_name;
-            const peakTierNameRaw = kit?.peak_tier_name;
-            const displayTierName =
-              peakTierNameRaw && peakTierNameRaw !== tierNameRaw
-                ? `Peak ${peakTierNameRaw}`
-                : tierNameRaw || "N/A";
-            const isRetired = kit?.retired === true;
-            const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
-            const isRanked = !!tierNameRaw;
-            const tierColors = getTierColors(tierNameRaw);
-            const points = kit?.points ?? 0;
+          <div style={styles.profilePositionCard}>
+            <div style={styles.ribbonProfile}>
+              <img
+                src={getShimmerUrl(player.position)}
+                alt="shimmer"
+                style={styles.shimmerImageProfile}
+                draggable={false}
+              />
+              <span style={styles.positionNumberProfile}>{player.position}</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <div style={styles.overallText}>OVERALL</div>
+              <div style={styles.overallPoints}>
+                {`(${
+                  player.total_points !== undefined && player.total_points !== null
+                    ? player.total_points.toLocaleString()
+                    : "0"
+                } pts)`}
+              </div>
+            </div>
+            <img src={overallIcon} alt="overall" style={styles.overallIcon} />
+          </div>
 
-            return (
-              <div
-                key={idx}
-                style={styles.tierBadge}
-                onMouseEnter={() => setHoveredTierIndex(idx)}
-                onMouseLeave={() => setHoveredTierIndex(null)}
-              >
-                <div style={styles.iconCircleWrapper}>
-                  {isRanked ? (
-                    <>
-                      <img
-                        src={getGamemodeIcon(mode)}
-                        alt="tier icon"
-                        style={styles.tierIcon}
-                      />
+          <div style={styles.sectionHeader}>TIERS</div>
+
+          <div style={styles.profileTiersCard}>
+            {validGamemodes.map((mode, idx) => {
+              const kit = (player.kits || []).find(
+                (k) =>
+                  k.kit_name === mode ||
+                  k.gamemode === mode ||
+                  k.name === mode ||
+                  k.type === mode
+              );
+              const tierNameRaw = kit?.tier_name;
+              const peakTierNameRaw = kit?.peak_tier_name;
+              const displayTierName =
+                peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                  ? `Peak ${peakTierNameRaw}`
+                  : tierNameRaw || "N/A";
+              const isRetired = kit?.retired === true;
+              const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
+              const isRanked = !!tierNameRaw;
+              const tierColors = getTierColors(tierNameRaw);
+              const points = kit?.points ?? 0;
+
+              return (
+                <div
+                  key={idx}
+                  style={styles.tierBadge}
+                  onMouseEnter={() => setHoveredTierIndex(idx)}
+                  onMouseLeave={() => setHoveredTierIndex(null)}
+                >
+                  <div style={styles.iconCircleWrapper}>
+                    {isRanked ? (
+                      <>
+                        <img
+                          src={getGamemodeIcon(mode)}
+                          alt="tier icon"
+                          style={styles.tierIcon}
+                        />
+                        <div
+                          style={{
+                            ...styles.iconOutline,
+                            borderColor: tierColors.backgroundColor,
+                            borderStyle: "solid",
+                          }}
+                        />
+                      </>
+                    ) : (
                       <div
                         style={{
                           ...styles.iconOutline,
-                          borderColor: tierColors.backgroundColor,
-                          borderStyle: "solid",
+                          borderColor: "#354153",
+                          borderStyle: "dotted",
                         }}
                       />
-                    </>
-                  ) : (
-                    <div
-                      style={{
-                        ...styles.iconOutline,
-                        borderColor: "#354153",
-                        borderStyle: "dotted",
-                      }}
-                    />
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      ...styles.tierName,
+                      backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
+                      color: isRanked ? tierColors.color : "#354153",
+                    }}
+                    title={tierName || "Unranked"}
+                  >
+                    {isRanked ? tierName : "—"}
+                  </div>
+
+                  {hoveredTierIndex === idx && (
+                    <div style={styles.tierTooltip}>
+                      <div style={{ fontWeight: "1000", fontSize: 24 }}>
+                        {displayTierName || "N/A"}
+                      </div>
+                      <div>{points.toLocaleString()} points</div>
+                    </div>
                   )}
                 </div>
-                <div
-                  style={{
-                    ...styles.tierName,
-                    backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
-                    color: isRanked ? tierColors.color : "#354153",
-                  }}
-                  title={tierName || "Unranked"}
-                >
-                  {isRanked ? tierName : "—"}
-                </div>
-
-                {hoveredTierIndex === idx && (
-                  <div style={styles.tierTooltip}>
-                    <div style={{ fontWeight: "1000", fontSize: 24 }}>{displayTierName || "N/A"}</div>
-
-                    <div>{points.toLocaleString()} points</div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </ScaleWrapper>
     </div>
   );
 }

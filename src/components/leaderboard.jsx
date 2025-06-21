@@ -61,6 +61,35 @@ function getShimmerUrl(position) {
   return shimmerUrls[position] || shimmerUrls.other;
 }
 
+function ScaleWrapper({ baseWidth = 1200, children }) {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    function onResize() {
+      const viewportWidth = window.innerWidth;
+      // Calculate scale ratio but don't upscale beyond 1
+      const newScale = Math.min(1, viewportWidth / baseWidth);
+      setScale(newScale);
+    }
+    window.addEventListener("resize", onResize);
+    onResize(); // initial call
+    return () => window.removeEventListener("resize", onResize);
+  }, [baseWidth]);
+
+  return (
+    <div
+      style={{
+        transformOrigin: "top left",
+        transform: `scale(${scale})`,
+        width: `${100 / scale}%`, // counteract scaling for layout
+        height: "auto",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 const STORAGE_KEY_PREFIX = "leaderboard_cache_";
 const CACHE_EXPIRATION = 10 * 60 * 1000;
 
@@ -303,8 +332,9 @@ export default function Leaderboard() {
       </p>
     );
 
-  return (
-    <div style={styles.outerWrapper}>
+return (
+  <div style={styles.outerWrapper}>
+    <ScaleWrapper baseWidth={1200}>
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
         <SearchBar />
@@ -317,8 +347,10 @@ export default function Leaderboard() {
       {selectedPlayer && (
         <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
       )}
-    </div>
-  );
+    </ScaleWrapper>
+  </div>
+);
+
 }
 
 const styles = {
