@@ -5,6 +5,7 @@ import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
 import PageHeader from "../components/pageheader";
 import SearchBar from "./searchbar";
+import "./leaderboard.css"; // <-- import your css here
 
 const validGamemodes = ["lifesteal", "trident_mace"];
 
@@ -76,12 +77,21 @@ export default function Leaderboard() {
   const [error, setError] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth <= 640 : false
+  );
+
   const isMounted = useRef(true);
 
   useEffect(() => {
     isMounted.current = true;
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 640);
+    }
+    window.addEventListener("resize", handleResize);
     return () => {
       isMounted.current = false;
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -148,19 +158,16 @@ export default function Leaderboard() {
       });
   }, [gamemode, navigate]);
 
-  // Detect mobile viewport once (on render)
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 640;
-
   function renderOverall() {
     return (
       <>
-        <div style={styles.headerRow} className="leaderboard-header">
-          <div style={styles.ribbonHeaderCol}>
-            <span style={styles.hashHeader}>#</span>
+        <div className="leaderboard-header">
+          <div className="ribbon-header-col">
+            <span className="hash-header">#</span>
           </div>
-          <div style={styles.usernameCol}>Player</div>
-          <div style={styles.regionCol}>Region</div>
-          <div style={styles.tierCol}>Tiers</div>
+          <div className="username-col">Player</div>
+          <div className="region-col">Region</div>
+          <div className="tier-col">Tiers</div>
         </div>
         {players.map((player, index) => {
           const shimmerUrl = getShimmerUrl(player.position);
@@ -176,31 +183,35 @@ export default function Leaderboard() {
               onClick={() => setSelectedPlayer(player)}
               className="leaderboard-row"
               style={{
-                ...styles.row,
                 backgroundColor: isHovered ? "#1f2937" : "#161E29",
                 transform: isHovered ? "translateX(-4px)" : "translateX(0)",
-                transition: "all 0.2s ease",
                 cursor: "pointer",
-                minWidth: 600,
+                minWidth: isMobile ? "auto" : 600,
+                transition: "all 0.2s ease",
               }}
             >
-              <div style={styles.ribbon}>
-                <img src={shimmerUrl} alt="shimmer" style={styles.shimmerImage} draggable={false} />
-                <span style={styles.positionNumber}>{player.position}</span>
+              <div className="ribbon">
+                <img
+                  src={shimmerUrl}
+                  alt="shimmer"
+                  className="shimmer-image"
+                  draggable={false}
+                />
+                <span className="position-number">{player.position}</span>
                 <img
                   src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
                   alt={player.username}
-                  style={styles.skinImageInRibbon}
+                  className="skin-image-in-ribbon"
                   draggable={false}
                 />
               </div>
-              <div style={styles.usernameColRow} title={player.username}>
+              <div className="username-col-row" title={player.username}>
                 {player.username}
               </div>
-              <div style={styles.regionCol}>
+              <div className="region-col">
                 <div
+                  className="region"
                   style={{
-                    ...styles.region,
                     backgroundColor: regionColor(player.region),
                     color: regionTextColor(player.region),
                   }}
@@ -208,7 +219,7 @@ export default function Leaderboard() {
                   {player.region || "N/A"}
                 </div>
               </div>
-              <div style={styles.tierColRow}>
+              <div className="tier-col-row">
                 {validGamemodes.map((mode, idx) => {
                   const kit = (player.kits || []).find(
                     (k) =>
@@ -234,39 +245,33 @@ export default function Leaderboard() {
                   return (
                     <div
                       key={idx}
-                      style={styles.tierBadge}
+                      className="tier-badge"
                       onMouseEnter={() => setHoveredTierIndex({ row: index, col: idx })}
                       onMouseLeave={() => setHoveredTierIndex({ row: null, col: null })}
                     >
-                      <div style={styles.iconCircleWrapper}>
+                      <div className="icon-circle-wrapper">
                         {isRanked ? (
                           <>
                             <img
                               src={getGamemodeIcon(mode)}
                               alt="tier icon"
-                              style={styles.tierIcon}
+                              className="tier-icon"
                             />
                             <div
-                              style={{
-                                ...styles.iconOutline,
-                                borderColor: tierColors.backgroundColor,
-                                borderStyle: "solid",
-                              }}
+                              className="icon-outline"
+                              style={{ borderColor: tierColors.backgroundColor, borderStyle: "solid" }}
                             />
                           </>
                         ) : (
                           <div
-                            style={{
-                              ...styles.iconOutline,
-                              borderColor: "#354153",
-                              borderStyle: "dotted",
-                            }}
+                            className="icon-outline"
+                            style={{ borderColor: "#354153", borderStyle: "dotted" }}
                           />
                         )}
                       </div>
                       <div
+                        className="tier-name"
                         style={{
-                          ...styles.tierName,
                           backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
                           color: isRanked ? tierColors.color : "#354153",
                           fontSize: isMobile ? 14 : 18,
@@ -277,8 +282,8 @@ export default function Leaderboard() {
                       </div>
 
                       {showTooltip && (
-                        <div style={styles.tierTooltip}>
-                          <div style={{ fontWeight: "1000", fontSize: isMobile ? 14 : 18 }}>{displayTierName || "N/A"}</div>
+                        <div className="tier-tooltip" style={{ fontSize: isMobile ? 14 : 18 }}>
+                          <div style={{ fontWeight: "1000" }}>{displayTierName || "N/A"}</div>
                           <div>{points.toLocaleString()} points</div>
                         </div>
                       )}
@@ -295,31 +300,30 @@ export default function Leaderboard() {
 
   if (loading) {
     return (
-      <div style={styles.loadingWrapper}>
-        <p style={styles.loadingText}>Loading Tiers</p>
-        <img src="/assets/loading.gif" alt="loading" style={styles.loadingGif} />
+      <div className="loading-wrapper">
+        <p className="loading-text">Loading Tiers</p>
+        <img src="/assets/loading.gif" alt="loading" className="loading-gif" />
       </div>
     );
   }
 
-  if (error)
+  if (error) {
     return (
-      <p style={{ ...styles.message, color: "#ef4444" }}>
+      <p className="message" style={{ color: "#ef4444" }}>
         {error}
       </p>
     );
+  }
 
   return (
-    <div style={styles.outerWrapper}>
+    <div className="outer-wrapper">
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
         <SearchBar />
       </PageHeader>
 
-      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-        <div className="leaderboard-container" style={styles.container}>
-          {renderOverall()}
-        </div>
+      <div className="scroll-wrapper">
+        <div className="container">{renderOverall()}</div>
       </div>
 
       {selectedPlayer && (
@@ -328,247 +332,3 @@ export default function Leaderboard() {
     </div>
   );
 }
-
-const styles = {
-  outerWrapper: {
-    backgroundColor: "#121821",
-    paddingTop: "4rem",
-    paddingLeft: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 0,
-    paddingRight: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 0,
-  },
-  container: {
-    maxWidth: 1200,
-    margin: "0 auto 3rem auto",
-    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "1.5rem 1rem" : "3rem 2rem 2rem",
-    backgroundColor: "#121821",
-    borderRadius: 24,
-    border: "2px solid #1f2937",
-    color: "#e5e7eb",
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 20,
-    position: "relative",
-    zIndex: 1,
-    overflowX: "auto",
-    WebkitOverflowScrolling: "touch",
-  },
-  message: {
-    textAlign: "center",
-    fontSize: "1.25rem",
-  },
-  loadingWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "4rem 0",
-  },
-  loadingText: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    marginBottom: "1.5rem",
-  },
-  loadingGif: {
-    width: 60,
-    height: 60,
-  },
-  headerRow: {
-    display: "flex",
-    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "0 0.5rem" : "0 1rem",
-    color: "#9ca3af",
-    fontWeight: "700",
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 20,
-    textTransform: "uppercase",
-    alignItems: "center",
-    gap: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 24,
-    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
-    minWidth: 600,
-  },
-  ribbonHeaderCol: {
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 90 : 150,
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  hashHeader: {
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 20,
-    fontWeight: 700,
-    fontStyle: "italic",
-    color: "#9ca3af",
-    paddingLeft: typeof window !== "undefined" && window.innerWidth <= 640 ? 10 : 14,
-  },
-  usernameCol: {
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 150 : 280,
-    fontWeight: 700,
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 20,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  regionCol: {
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 120 : 200,
-    fontWeight: 700,
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 20,
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  tierCol: {
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 180 : 300,
-    fontWeight: 700,
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 20,
-    textAlign: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  row: {
-    display: "flex",
-    alignItems: "center",
-    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "0.5rem 0.5rem" : "1rem 1rem",
-    borderRadius: 12,
-    border: "2px solid #1f2937",
-    marginBottom: 12,
-    gap: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 24,
-    minHeight: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
-    cursor: "default",
-    minWidth: 600,
-  },
-  ribbon: {
-    position: "relative",
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 90 : 150,
-    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
-    borderRadius: 8,
-    overflow: "visible",
-    flexShrink: 0,
-    userSelect: "none",
-    backgroundColor: "transparent",
-  },
-  shimmerImage: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 90 : 150,
-    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 50 : 70,
-    borderRadius: 8,
-    objectFit: "cover",
-    pointerEvents: "none",
-    userSelect: "none",
-    zIndex: 0,
-  },
-  positionNumber: {
-    position: "absolute",
-    top: "50%",
-    left: typeof window !== "undefined" && window.innerWidth <= 640 ? 8 : 14,
-    transform: "translateY(-50%)",
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 24 : 42,
-    fontWeight: 700,
-    fontStyle: "italic",
-    color: "#ffffff",
-    zIndex: 2,
-    textShadow: "0 0 4px #000, 1px 1px 2px #000",
-    userSelect: "none",
-  },
-  skinImageInRibbon: {
-    position: "absolute",
-    top: "50%",
-    right: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 30,
-    transform: "translateY(-50%)",
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 40 : 70,
-    height: typeof window !== "undefined" && window.innerWidth <= 640 ? 40 : 70,
-    borderRadius: 8,
-    zIndex: 2,
-    userSelect: "none",
-    boxShadow: "none",
-  },
-  usernameColRow: {
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 150 : 280,
-    fontWeight: 800,
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 25,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  region: {
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 16 : 25,
-    padding: typeof window !== "undefined" && window.innerWidth <= 640 ? "3px 5px" : "6px 8px",
-    borderRadius: 12,
-    minWidth: 35,
-    textAlign: "center",
-    textTransform: "uppercase",
-    userSelect: "none",
-    fontWeight: "800",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    lineHeight: 1,
-    marginLeft: 5,
-  },
-  tierColRow: {
-    width: typeof window !== "undefined" && window.innerWidth <= 640 ? 180 : 300,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minWidth: 90,
-    gap: typeof window !== "undefined" && window.innerWidth <= 640 ? 8 : 16,
-  },
-  tierBadge: {
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 6,
-    flexShrink: 0,
-  },
-  iconCircleWrapper: {
-    position: "relative",
-    width: 32,
-    height: 32,
-  },
-  iconOutline: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: 32,
-    height: 32,
-    borderRadius: "50%",
-    border: "2px solid",
-    boxSizing: "border-box",
-    backgroundColor: "transparent",
-  },
-  tierIcon: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    objectFit: "contain",
-    transform: "translate(-50%, -50%)",
-  },
-  tierName: {
-    borderRadius: 15,
-    padding: "0px 1px",
-    fontWeight: 900,
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 14 : 18,
-    minWidth: 42,
-    textAlign: "center",
-    marginTop: -5,
-    userSelect: "none",
-  },
-  tierTooltip: {
-    position: "absolute",
-    bottom: "110%",
-    left: "50%",
-    transform: "translateX(-50%)",
-    backgroundColor: "#212B39",
-    color: "#e5e7eb",
-    padding: "6px 10px",
-    borderRadius: 10,
-    whiteSpace: "nowrap",
-    pointerEvents: "none",
-    fontSize: typeof window !== "undefined" && window.innerWidth <= 640 ? 12 : 14,
-    zIndex: 1001,
-    userSelect: "none",
-    alignItems: "center",
-    textAlign: "center",
-  },
-};
