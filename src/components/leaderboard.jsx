@@ -5,7 +5,7 @@ import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
 import PageHeader from "../components/pageheader";
 import SearchBar from "./searchbar";
-import "./leaderboard.css"; // <-- import your css here
+import "../components/leaderboard.css";
 
 const validGamemodes = ["lifesteal", "trident_mace"];
 
