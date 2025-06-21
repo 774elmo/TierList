@@ -63,148 +63,137 @@ export default function ProfileOverlay({ player, onClose }) {
 
   return (
     <div style={styles.profileOverlay}>
-      <div
-        style={{
-          overflowX: "auto",
-          WebkitOverflowScrolling: "touch",
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <div style={styles.profileCard}>
-          <button onClick={onClose} style={styles.closeButton}>
-            ×
-          </button>
+      <div style={styles.profileCard}>
+        <button onClick={onClose} style={styles.closeButton}>
+          ×
+        </button>
 
-          <div style={styles.skinOutline}>
+        <div style={styles.skinOutline}>
+          <img
+            src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+            alt={player.username}
+            style={styles.profileSkin}
+          />
+        </div>
+
+        <div style={styles.profileUsername}>{player.username}</div>
+
+        <div
+          style={{
+            ...styles.region,
+            margin: "1rem auto",
+            width: "fit-content",
+            fontSize: 20,
+            fontWeight: 700,
+            backgroundColor: regionColor(player.region),
+            color: regionTextColor(player.region),
+          }}
+        >
+          {player.region || "N/A"}
+        </div>
+
+        <div style={styles.sectionHeader}>POSITION</div>
+
+        <div style={styles.profilePositionCard}>
+          <div style={styles.ribbonProfile}>
             <img
-              src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-              alt={player.username}
-              style={styles.profileSkin}
+              src={getShimmerUrl(player.position)}
+              alt="shimmer"
+              style={styles.shimmerImageProfile}
+              draggable={false}
             />
+            <span style={styles.positionNumberProfile}>{player.position}</span>
           </div>
-
-          <div style={styles.profileUsername}>{player.username}</div>
-
-          <div
-            style={{
-              ...styles.region,
-              margin: "1rem auto",
-              width: "fit-content",
-              fontSize: 20,
-              fontWeight: 700,
-              backgroundColor: regionColor(player.region),
-              color: regionTextColor(player.region),
-            }}
-          >
-            {player.region || "N/A"}
-          </div>
-
-          <div style={styles.sectionHeader}>POSITION</div>
-
-          <div style={styles.profilePositionCard}>
-            <div style={styles.ribbonProfile}>
-              <img
-                src={getShimmerUrl(player.position)}
-                alt="shimmer"
-                style={styles.shimmerImageProfile}
-                draggable={false}
-              />
-              <span style={styles.positionNumberProfile}>{player.position}</span>
-            </div>
+          <div style={styles.overallInfo}>
+            <img src={overallIcon} alt="overall" style={styles.overallIcon} />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <div style={styles.overallText}>OVERALL</div>
               <div style={styles.overallPoints}>
-                {`(${
-                  player.total_points !== undefined && player.total_points !== null
-                    ? player.total_points.toLocaleString()
-                    : "0"
-                } pts)`}
+                {player.total_points !== undefined && player.total_points !== null
+                  ? `${player.total_points.toLocaleString()} pts`
+                  : "0 pts"}
               </div>
             </div>
-            <img src={overallIcon} alt="overall" style={styles.overallIcon} />
           </div>
+        </div>
 
-          <div style={styles.sectionHeader}>TIERS</div>
+        <div style={styles.sectionHeader}>TIERS</div>
 
-          <div style={styles.profileTiersCard}>
-            {validGamemodes.map((mode, idx) => {
-              const kit = (player.kits || []).find(
-                (k) =>
-                  k.kit_name === mode ||
-                  k.gamemode === mode ||
-                  k.name === mode ||
-                  k.type === mode
-              );
-              const tierNameRaw = kit?.tier_name;
-              const peakTierNameRaw = kit?.peak_tier_name;
-              const displayTierName =
-                peakTierNameRaw && peakTierNameRaw !== tierNameRaw
-                  ? `Peak ${peakTierNameRaw}`
-                  : tierNameRaw || "N/A";
-              const isRetired = kit?.retired === true;
-              const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
-              const isRanked = !!tierNameRaw;
-              const tierColors = getTierColors(tierNameRaw);
-              const points = kit?.points ?? 0;
+        <div style={styles.profileTiersCard}>
+          {validGamemodes.map((mode, idx) => {
+            const kit = (player.kits || []).find(
+              (k) =>
+                k.kit_name === mode ||
+                k.gamemode === mode ||
+                k.name === mode ||
+                k.type === mode
+            );
+            const tierNameRaw = kit?.tier_name;
+            const peakTierNameRaw = kit?.peak_tier_name;
+            const displayTierName =
+              peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                ? `Peak ${peakTierNameRaw}`
+                : tierNameRaw || "N/A";
+            const isRetired = kit?.retired === true;
+            const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
+            const isRanked = !!tierNameRaw;
+            const tierColors = getTierColors(tierNameRaw);
+            const points = kit?.points ?? 0;
 
-              return (
-                <div
-                  key={idx}
-                  style={styles.tierBadge}
-                  onMouseEnter={() => setHoveredTierIndex(idx)}
-                  onMouseLeave={() => setHoveredTierIndex(null)}
-                >
-                  <div style={styles.iconCircleWrapper}>
-                    {isRanked ? (
-                      <>
-                        <img
-                          src={getGamemodeIcon(mode)}
-                          alt="tier icon"
-                          style={styles.tierIcon}
-                        />
-                        <div
-                          style={{
-                            ...styles.iconOutline,
-                            borderColor: tierColors.backgroundColor,
-                            borderStyle: "solid",
-                          }}
-                        />
-                      </>
-                    ) : (
+            return (
+              <div
+                key={idx}
+                style={styles.tierBadge}
+                onMouseEnter={() => setHoveredTierIndex(idx)}
+                onMouseLeave={() => setHoveredTierIndex(null)}
+              >
+                <div style={styles.iconCircleWrapper}>
+                  {isRanked ? (
+                    <>
+                      <img
+                        src={getGamemodeIcon(mode)}
+                        alt="tier icon"
+                        style={styles.tierIcon}
+                      />
                       <div
                         style={{
                           ...styles.iconOutline,
-                          borderColor: "#354153",
-                          borderStyle: "dotted",
+                          borderColor: tierColors.backgroundColor,
+                          borderStyle: "solid",
                         }}
                       />
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      ...styles.tierName,
-                      backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
-                      color: isRanked ? tierColors.color : "#354153",
-                    }}
-                    title={tierName || "Unranked"}
-                  >
-                    {isRanked ? tierName : "—"}
-                  </div>
-
-                  {hoveredTierIndex === idx && (
-                    <div style={styles.tierTooltip}>
-                      <div style={{ fontWeight: "1000", fontSize: 24 }}>
-                        {displayTierName || "N/A"}
-                      </div>
-                      <div>{points.toLocaleString()} points</div>
-                    </div>
+                    </>
+                  ) : (
+                    <div
+                      style={{
+                        ...styles.iconOutline,
+                        borderColor: "#354153",
+                        borderStyle: "dotted",
+                      }}
+                    />
                   )}
                 </div>
-              );
-            })}
-          </div>
+                <div
+                  style={{
+                    ...styles.tierName,
+                    backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
+                    color: isRanked ? tierColors.color : "#354153",
+                  }}
+                  title={tierName || "Unranked"}
+                >
+                  {isRanked ? tierName : "—"}
+                </div>
+
+                {hoveredTierIndex === idx && (
+                  <div style={styles.tierTooltip}>
+                    <div style={{ fontWeight: "1000", fontSize: 24 }}>{displayTierName || "N/A"}</div>
+
+                    <div>{points.toLocaleString()} points</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -216,29 +205,24 @@ const styles = {
     position: "fixed",
     top: 0,
     left: 0,
-    width: "100vw",
-    height: "100vh",
+    width: "100%",
+    height: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.8)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
-    padding: "1rem",
-    boxSizing: "border-box",
-    overflowY: "auto",
   },
   profileCard: {
     backgroundColor: "#121821",
     padding: "2rem",
     borderRadius: 16,
-    width: "100%",
+    width: "90%",
     maxWidth: 600,
-    minWidth: 600, // fix width to prevent squashing on narrow screens
     color: "#e5e7eb",
     border: "2px solid #1f2937",
     textAlign: "center",
     position: "relative",
-    boxSizing: "border-box",
   },
   closeButton: {
     position: "absolute",
@@ -261,7 +245,6 @@ const styles = {
     height: 108,
     boxSizing: "border-box",
     overflow: "hidden",
-    margin: "0 auto",
   },
   profileSkin: {
     width: "100%",
@@ -276,10 +259,9 @@ const styles = {
     fontWeight: "800",
     marginTop: 8,
     color: "#ffffff",
-    wordBreak: "break-word",
   },
   region: {
-    fontSize: 20,
+    fontSize: 25,
     padding: "6px 8px",
     borderRadius: 12,
     minWidth: 35,
@@ -287,7 +269,7 @@ const styles = {
     textTransform: "uppercase",
     userSelect: "none",
     fontWeight: "800",
-    display: "inline-flex",
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
     lineHeight: 1,
@@ -295,9 +277,9 @@ const styles = {
   },
   sectionHeader: {
     fontWeight: "700",
-    fontSize: 28,
+    fontSize: 35,
     textAlign: "left",
-    marginBottom: 8,
+    marginBottom: 4,
     marginLeft: 4,
     color: "#9ca3af",
     userSelect: "none",
@@ -309,10 +291,8 @@ const styles = {
     border: "2px solid #1f2937",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: 20,
-    padding: "10px 16px",
-    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    gap: 24,
   },
   ribbonProfile: {
     position: "relative",
@@ -377,7 +357,7 @@ const styles = {
     backgroundColor: "#18202C",
     borderRadius: 12,
     border: "2px solid #1f2937",
-    padding: "1rem 1rem",
+    padding: "1rem 2rem",
     display: "flex",
     justifyContent: "center",
     gap: 24,
@@ -419,9 +399,9 @@ const styles = {
   },
   tierName: {
     borderRadius: 15,
-    padding: "0 6px",
-    fontWeight: 700,
-    fontSize: 18,
+    padding: "0px 1px",
+    fontWeight: 1000,
+    fontSize: 20,
     minWidth: 42,
     textAlign: "center",
     marginTop: -5,
@@ -438,7 +418,7 @@ const styles = {
     borderRadius: 10,
     whiteSpace: "nowrap",
     pointerEvents: "none",
-    fontSize: 16,
+    fontSize: 20,
     zIndex: 1001,
     userSelect: "none",
   },

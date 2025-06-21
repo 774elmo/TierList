@@ -68,79 +68,71 @@ export default function SearchBar() {
 
   return (
     <>
-      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", width: "100%" }}>
-        <form
-          onSubmit={handleSearch}
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            minWidth: 260, // prevent squashing
-            width: "fit-content",
+      <form
+        onSubmit={handleSearch}
+        style={{ position: "relative", display: "flex", alignItems: "center" }}
+        aria-label="Search Player"
+      >
+        <input
+          type="text"
+          placeholder={error ? "" : "Search Player..."}
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            if (error) {
+              setError("");
+              if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+            }
           }}
-          aria-label="Search Player"
-        >
-          <input
-            type="text"
-            placeholder={error ? "" : "Search Player..."}
-            value={searchText}
-            onChange={(e) => {
-              setSearchText(e.target.value);
-              if (error) {
-                setError("");
-                if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
-              }
-            }}
+          style={{
+            padding: "8px 12px",
+            borderRadius: 8,
+            border: error ? "2px solid #ef4444" : "2px solid #1f2937",
+            outline: "none",
+            fontSize: 16,
+            width: 220,
+            color: "#e5e7eb",
+            backgroundColor: "#161E29",
+            transition: "all 0.2s ease",
+            boxShadow: "none",
+          }}
+          spellCheck={false}
+          onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+          onBlur={(e) => (e.target.style.borderColor = error ? "#ef4444" : "#1f2937")}
+        />
+
+        {loading && (
+          <div
             style={{
-              padding: "8px 12px",
-              borderRadius: 8,
-              border: error ? "2px solid #ef4444" : "2px solid #1f2937",
-              outline: "none",
-              fontSize: 16,
-              width: 220,
+              position: "absolute",
+              right: -30,
               color: "#e5e7eb",
-              backgroundColor: "#161E29",
-              transition: "all 0.2s ease",
-              boxShadow: "none",
+              fontSize: 14,
             }}
-            spellCheck={false}
-            onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
-            onBlur={(e) => (e.target.style.borderColor = error ? "#ef4444" : "#1f2937")}
-          />
+          >
+            Loading...
+          </div>
+        )}
 
-          {loading && (
-            <div
-              style={{
-                position: "absolute",
-                right: -30,
-                color: "#e5e7eb",
-                fontSize: 14,
-              }}
-            >
-              Loading...
-            </div>
-          )}
-
-          {error && (
-            <div
-              style={{
-                position: "absolute",
-                left: 12,
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "#ef4444",
-                fontWeight: "600",
-                fontSize: 14,
-                pointerEvents: "none",
-                userSelect: "none",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {error}
-            </div>
-          )}
-        </form>
-      </div>
+        {error && (
+          <div
+            style={{
+              position: "absolute",
+              left: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "#ef4444",
+              fontWeight: "600",
+              fontSize: 14,
+              pointerEvents: "none",
+              userSelect: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {error}
+          </div>
+        )}
+      </form>
 
       {playerData && <ProfileOverlay player={playerData} onClose={closeOverlay} />}
     </>

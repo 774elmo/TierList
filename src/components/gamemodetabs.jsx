@@ -1,3 +1,4 @@
+// components/GamemodeTabs.js
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getTabIcon } from "./tabicons";
@@ -68,8 +69,7 @@ const styles = {
   tabContainer: {
     display: "flex",
     justifyContent: "flex-start",
-    gap: "0.5rem",
-    flexWrap: "wrap",
+    gap: "0.3rem",
   },
   tab: {
     display: "flex",
@@ -77,7 +77,7 @@ const styles = {
     gap: "0.5rem",
     background: "#121821",
     color: "#e5e7eb",
-    padding: "8px 12px",
+    padding: "10px 16px",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     borderBottomLeftRadius: 0,
@@ -85,11 +85,9 @@ const styles = {
     border: "2px solid #1f2937",
     borderBottom: "none",
     cursor: "pointer",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 600,
     transition: "background 0.2s ease",
-    minWidth: 100,
-    justifyContent: "center",
   },
   activeTab: {
     border: "2px solid #1f2937",
@@ -101,12 +99,11 @@ const styles = {
     background: "#1f2937",
   },
   icon: {
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     objectFit: "contain",
   },
   tabText: {
     textTransform: "capitalize",
-    whiteSpace: "nowrap",
   },
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
-import PageHeader from "../components/pageheader";
+import PageHeader from "../components/pageheader"; // <- import the header
 import SearchBar from "../components/searchbar";
 
 import HT1 from "../assets/HT1.webp";
@@ -55,6 +55,7 @@ function getDarkRegionColor(region) {
   }
 }
 
+// Simple in-file cache for fetch responses
 const fetchCache = {};
 
 async function cachedFetch(url) {
@@ -77,8 +78,6 @@ export default function TridentMace() {
   const [overallPlayers, setOverallPlayers] = useState([]);
   const [hoveredPlayer, setHoveredPlayer] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-
-  const isMobile = window.innerWidth <= 640;
 
   useEffect(() => {
     if (!validGamemodes.includes(gamemode)) {
@@ -106,6 +105,7 @@ export default function TridentMace() {
     fetchData();
   }, [gamemode]);
 
+  // Return players with filtered non-retired kits per tier+HT/LT
   function getPlayersForTierEnding(ending) {
     return {
       HT: players
@@ -115,10 +115,10 @@ export default function TridentMace() {
             (k) =>
               k.kit_name === gamemode &&
               k.tier_name === `HT${ending}` &&
-              !k.retired
+              !k.retired // exclude retired kits only
           ),
         }))
-        .filter(({ kits }) => kits.length > 0),
+        .filter(({ kits }) => kits.length > 0), // only players with active kits here
 
       LT: players
         .map((p) => ({
@@ -143,195 +143,191 @@ export default function TridentMace() {
 
   return (
     <div style={styles.outerWrapper}>
+      {/* Reusable Header */}
       <PageHeader>
         <GamemodeTabs />
         <SearchBar />
       </PageHeader>
 
-      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-        <div style={styles.container}>
-          {[1, 2, 3, 4, 5].map((num, idx) => {
-            const tier = tierData[num - 1];
-            const { HT, LT } = getPlayersForTierEnding(num);
+      {/* Page Content */}
+      <div style={styles.container}>
+        {[1, 2, 3, 4, 5].map((num, idx) => {
+          const tier = tierData[num - 1];
+          const { HT, LT } = getPlayersForTierEnding(num);
 
-            return (
-              <div key={num} style={styles.strip}>
-                <div
+          return (
+            <div key={num} style={styles.strip}>
+              <div
+                style={{
+                  height: 60,
+                  backgroundColor: topStripColors[idx],
+                  borderTopLeftRadius: 12,
+                  borderTopRightRadius: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {tier.img && (
+                  <img
+                    src={tier.img}
+                    alt={tier.label}
+                    style={{
+                      height: 40,
+                      width: 40,
+                      objectFit: "contain",
+                      marginRight: 8,
+                    }}
+                  />
+                )}
+                <span
                   style={{
-                    height: 60,
-                    backgroundColor: topStripColors[idx],
-                    borderTopLeftRadius: 12,
-                    borderTopRightRadius: 12,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    color: tier.color,
+                    fontWeight: "700",
+                    fontSize: 24,
+                    userSelect: "none",
                   }}
                 >
-                  {tier.img && (
-                    <img
-                      src={tier.img}
-                      alt={tier.label}
+                  {tier.label}
+                </span>
+              </div>
+
+              {HT.map(({ player }, i) => {
+                const isLastHT = HT.length > 0 && LT.length === 0 && i === HT.length - 1;
+                const brightColor = getBrightRegionColor(player.region);
+                const darkColor = getDarkRegionColor(player.region);
+                const isHovered = hoveredPlayer === player.uuid;
+
+                return (
+                  <div
+                    key={player.uuid}
+                    style={{
+                      ...styles.tierEntry,
+                      backgroundColor: "#263244",
+                      borderBottomLeftRadius: isLastHT ? 8 : 0,
+                      borderBottomRightRadius: isLastHT ? 8 : 0,
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={() => setHoveredPlayer(player.uuid)}
+                    onMouseLeave={() => setHoveredPlayer(null)}
+                    onClick={() => handlePlayerClick(player.uuid)}
+                  >
+                    <div
                       style={{
-                        height: isMobile ? 30 : 40,
-                        width: isMobile ? 30 : 40,
-                        objectFit: "contain",
-                        marginRight: 8,
+                        ...styles.regionStrip,
+                        backgroundColor: isHovered ? darkColor : brightColor,
+                        width: isHovered ? 30 : 5,
+                        transition: "width 0.3s ease, background-color 0.3s ease",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingLeft: 0,
+                        color: brightColor,
+                        fontWeight: "700",
+                        fontSize: 14,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        borderRadius: 2,
+                        marginRight: 6,
+                        userSelect: "none",
+                      }}
+                    >
+                      {isHovered && player.region}
+                    </div>
+
+                    <div style={styles.skinFrame}>
+                      <img
+                        src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+                        alt={player.username}
+                        style={styles.skin}
+                      />
+                    </div>
+                    <span style={styles.username}>{player.username}</span>
+                    <img
+                      src={caretDoubleUp}
+                      alt="HT icon"
+                      style={{
+                        width: 25,
+                        height: 20,
+                        marginLeft: 6,
+                        filter:
+                          "invert(38%) sepia(51%) saturate(344%) hue-rotate(190deg) brightness(90%) contrast(85%)",
                       }}
                     />
-                  )}
-                  <span
+                  </div>
+                );
+              })}
+
+              {LT.map(({ player }, i) => {
+                const isLastLT = i === LT.length - 1;
+                const brightColor = getBrightRegionColor(player.region);
+                const darkColor = getDarkRegionColor(player.region);
+                const isHovered = hoveredPlayer === player.uuid;
+
+                return (
+                  <div
+                    key={player.uuid}
                     style={{
-                      color: tier.color,
-                      fontWeight: "700",
-                      fontSize: isMobile ? 18 : 24,
-                      userSelect: "none",
+                      ...styles.tierEntry,
+                      backgroundColor: "#161E2A",
+                      borderBottomLeftRadius: isLastLT ? 8 : 0,
+                      borderBottomRightRadius: isLastLT ? 8 : 0,
+                      cursor: "pointer",
                     }}
+                    onMouseEnter={() => setHoveredPlayer(player.uuid)}
+                    onMouseLeave={() => setHoveredPlayer(null)}
+                    onClick={() => handlePlayerClick(player.uuid)}
                   >
-                    {tier.label}
-                  </span>
-                </div>
-
-                {HT.map(({ player }, i) => {
-                  const isLastHT = HT.length > 0 && LT.length === 0 && i === HT.length - 1;
-                  const brightColor = getBrightRegionColor(player.region);
-                  const darkColor = getDarkRegionColor(player.region);
-                  const isHovered = hoveredPlayer === player.uuid;
-
-                  return (
                     <div
-                      key={player.uuid}
                       style={{
-                        ...styles.tierEntry,
-                        backgroundColor: "#263244",
-                        borderBottomLeftRadius: isLastHT ? 8 : 0,
-                        borderBottomRightRadius: isLastHT ? 8 : 0,
-                        cursor: "pointer",
+                        ...styles.regionStrip,
+                        backgroundColor: isHovered ? darkColor : brightColor,
+                        width: isHovered ? 30 : 5,
+                        transition: "width 0.3s ease, background-color 0.3s ease",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingLeft: 0,
+                        color: brightColor,
+                        fontWeight: "700",
+                        fontSize: 14,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        borderRadius: 2,
+                        marginRight: 6,
+                        userSelect: "none",
                       }}
-                      onMouseEnter={() => setHoveredPlayer(player.uuid)}
-                      onMouseLeave={() => setHoveredPlayer(null)}
-                      onClick={() => handlePlayerClick(player.uuid)}
                     >
-                      <div
-                        style={{
-                          ...styles.regionStrip,
-                          backgroundColor: isHovered ? darkColor : brightColor,
-                          width: isHovered ? 30 : 5,
-                          transition: "width 0.3s ease, background-color 0.3s ease",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingLeft: 0,
-                          color: brightColor,
-                          fontWeight: "700",
-                          fontSize: isMobile ? 10 : 14,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          borderRadius: 2,
-                          marginRight: 6,
-                          userSelect: "none",
-                        }}
-                      >
-                        {isHovered && player.region}
-                      </div>
+                      {isHovered && player.region}
+                    </div>
 
-                      <div style={styles.skinFrame}>
-                        <img
-                          src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-                          alt={player.username}
-                          style={styles.skin}
-                        />
-                      </div>
-                      <span style={{ ...styles.username, fontSize: isMobile ? 10 : 14 }}>
-                        {player.username}
-                      </span>
+                    <div style={styles.skinFrame}>
                       <img
-                        src={caretDoubleUp}
-                        alt="HT icon"
-                        style={{
-                          width: isMobile ? 20 : 25,
-                          height: isMobile ? 16 : 20,
-                          marginLeft: 6,
-                          filter:
-                            "invert(38%) sepia(51%) saturate(344%) hue-rotate(190deg) brightness(90%) contrast(85%)",
-                        }}
+                        src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+                        alt={player.username}
+                        style={styles.skin}
                       />
                     </div>
-                  );
-                })}
-
-                {LT.map(({ player }, i) => {
-                  const isLastLT = i === LT.length - 1;
-                  const brightColor = getBrightRegionColor(player.region);
-                  const darkColor = getDarkRegionColor(player.region);
-                  const isHovered = hoveredPlayer === player.uuid;
-
-                  return (
-                    <div
-                      key={player.uuid}
+                    <span style={styles.username}>{player.username}</span>
+                    <img
+                      src={caretUp}
+                      alt="LT icon"
                       style={{
-                        ...styles.tierEntry,
-                        backgroundColor: "#161E2A",
-                        borderBottomLeftRadius: isLastLT ? 8 : 0,
-                        borderBottomRightRadius: isLastLT ? 8 : 0,
-                        cursor: "pointer",
+                        width: 25,
+                        height: 20,
+                        marginLeft: 6,
+                        filter:
+                          "invert(20%) sepia(45%) saturate(310%) hue-rotate(200deg) brightness(80%) contrast(85%)",
                       }}
-                      onMouseEnter={() => setHoveredPlayer(player.uuid)}
-                      onMouseLeave={() => setHoveredPlayer(null)}
-                      onClick={() => handlePlayerClick(player.uuid)}
-                    >
-                      <div
-                        style={{
-                          ...styles.regionStrip,
-                          backgroundColor: isHovered ? darkColor : brightColor,
-                          width: isHovered ? 30 : 5,
-                          transition: "width 0.3s ease, background-color 0.3s ease",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingLeft: 0,
-                          color: brightColor,
-                          fontWeight: "700",
-                          fontSize: isMobile ? 10 : 14,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          borderRadius: 2,
-                          marginRight: 6,
-                          userSelect: "none",
-                        }}
-                      >
-                        {isHovered && player.region}
-                      </div>
-
-                      <div style={styles.skinFrame}>
-                        <img
-                          src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-                          alt={player.username}
-                          style={styles.skin}
-                        />
-                      </div>
-                      <span style={{ ...styles.username, fontSize: isMobile ? 10 : 14 }}>
-                        {player.username}
-                      </span>
-                      <img
-                        src={caretUp}
-                        alt="LT icon"
-                        style={{
-                          width: isMobile ? 20 : 25,
-                          height: isMobile ? 16 : 20,
-                          marginLeft: 6,
-                          filter:
-                            "invert(20%) sepia(45%) saturate(310%) hue-rotate(200deg) brightness(80%) contrast(85%)",
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
 
       {selectedPlayer && (
@@ -348,7 +344,6 @@ const styles = {
     minHeight: "100vh",
   },
   container: {
-    minWidth: 1200,
     maxWidth: 1200,
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
@@ -361,7 +356,6 @@ const styles = {
     zIndex: 1,
     display: "flex",
     gap: 12,
-    boxSizing: "border-box",
   },
   strip: {
     flex: 1,

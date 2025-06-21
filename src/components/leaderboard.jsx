@@ -310,9 +310,7 @@ export default function Leaderboard() {
         <SearchBar />
       </PageHeader>
 
-      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-        <div style={styles.container}>{renderOverall()}</div>
-      </div>
+      <div style={styles.container}>{renderOverall()}</div>
 
       {selectedPlayer && (
         <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
@@ -328,7 +326,6 @@ const styles = {
   },
   container: {
     maxWidth: 1200,
-    minWidth: 1200, // Prevent container from shrinking below 1200px
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
     backgroundColor: "#121821",
@@ -338,7 +335,6 @@ const styles = {
     fontSize: 20,
     position: "relative",
     zIndex: 1,
-    boxSizing: "border-box",
   },
   message: {
     textAlign: "center",
@@ -370,7 +366,6 @@ const styles = {
     alignItems: "center",
     gap: 24,
     height: 70,
-    flexShrink: 0, // Prevent shrinking
   },
   ribbonHeaderCol: {
     width: 150,
@@ -417,7 +412,6 @@ const styles = {
     gap: 24,
     minHeight: 70,
     cursor: "default",
-    flexShrink: 0, // Prevent shrinking
   },
   ribbon: {
     position: "relative",
