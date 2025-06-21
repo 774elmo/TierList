@@ -323,22 +323,21 @@ const styles = {
   outerWrapper: {
     backgroundColor: "#121821",
     paddingTop: "4rem",
-    minHeight: "100vh",
-    paddingLeft: 12,
-    paddingRight: 12,
   },
   container: {
-    maxWidth: "100%",   // full width, no max 1200px
+    maxWidth: 1200,
+    minWidth: 1200,          // FIXED minWidth to force container width on mobile
     margin: "0 auto 3rem auto",
-    padding: "1.5rem 1rem 1rem",
+    padding: "3rem 2rem 2rem",
     backgroundColor: "#121821",
     borderRadius: 24,
     border: "2px solid #1f2937",
     color: "#e5e7eb",
-    fontSize: 16,       // slightly smaller font on mobile
+    fontSize: 20,
     position: "relative",
     zIndex: 1,
-    overflowX: "visible",  // no horizontal scroll
+    overflowX: "auto",       // allow horizontal scroll on small widths
+    WebkitOverflowScrolling: "touch",
   },
   headerRow: {
     display: "flex",
