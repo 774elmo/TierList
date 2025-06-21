@@ -593,7 +593,8 @@ const styles = {
     height: 20,
     borderRadius: 4,
     objectFit: "contain",
-    transform: "translate(-50%, -50)",
+    transform: "translate(-50%, -50%)",
+
   },
   tierName: {
     borderRadius: 15,
