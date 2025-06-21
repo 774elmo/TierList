@@ -5,24 +5,33 @@ import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
 import PageHeader from "../components/pageheader";
 import SearchBar from "./searchbar";
+import DiscordIcon from "../assets/discord.svg";
 
 const validGamemodes = ["lifesteal", "trident_mace"];
 
 function regionColor(region) {
   switch (region) {
-    case "AS": return "#422C3F";
-    case "EU": return "#1C3E20";
-    case "NA": return "#442228";
-    default: return "#6b7280";
+    case "AS":
+      return "#422C3F";
+    case "EU":
+      return "#1C3E20";
+    case "NA":
+      return "#442228";
+    default:
+      return "#6b7280";
   }
 }
 
 function regionTextColor(region) {
   switch (region) {
-    case "AS": return "#AF7F91";
-    case "EU": return "#89F19C";
-    case "NA": return "#D95C6A";
-    default: return "#ffffff";
+    case "AS":
+      return "#AF7F91";
+    case "EU":
+      return "#89F19C";
+    case "NA":
+      return "#D95C6A";
+    default:
+      return "#ffffff";
   }
 }
 
@@ -64,6 +73,10 @@ export default function Leaderboard() {
   const navigate = useNavigate();
   const gamemode = rawGamemode || "overall";
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [lifestealLink] = useState("https://discord.gg/lifestealpvp");
+  const [tridentLink] = useState("https://discord.gg/your-tridentmace-link");
+
   const [players, setPlayers] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [hoveredTierIndex, setHoveredTierIndex] = useState({ row: null, col: null });
@@ -97,7 +110,9 @@ export default function Leaderboard() {
 
   useEffect(() => {
     isMounted.current = true;
-    return () => { isMounted.current = false; };
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   function getCachedData(mode) {
@@ -160,13 +175,64 @@ export default function Leaderboard() {
   }
 
   if (error) {
-    return (
-      <p style={{ ...styles.message, color: "#ef4444" }}>{error}</p>
-    );
+    return <p style={{ ...styles.message, color: "#ef4444" }}>{error}</p>;
   }
 
   return (
     <div style={styles.outerWrapper}>
+      {/* Discord Card */}
+      <div style={styles.topCard}>
+        <div style={styles.discordWrapper}>
+          <img
+            src={DiscordIcon}
+            alt="Discord"
+            style={styles.discordIcon}
+            draggable={false}
+          />
+          <div
+            style={styles.discordText}
+            onMouseEnter={() => setShowPopup(true)}
+            onMouseLeave={() => setShowPopup(false)}
+          >
+            Discords ^
+            {showPopup && (
+              <div style={styles.discordPopup}>
+                <div style={styles.popupItem}>
+                  <img
+                    src={getGamemodeIcon("lifesteal")}
+                    alt="Lifesteal"
+                    style={styles.popupIcon}
+                  />
+                  <a
+                    href={lifestealLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                  >
+                    Lifesteal
+                  </a>
+                </div>
+                <div style={styles.popupItem}>
+                  <img
+                    src={getGamemodeIcon("trident_mace")}
+                    alt="Trident Mace"
+                    style={styles.popupIcon}
+                  />
+                  <a
+                    href={tridentLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                  >
+                    Trident Mace
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
         <SearchBar />
@@ -214,7 +280,12 @@ export default function Leaderboard() {
               }}
             >
               <div style={styles.ribbon}>
-                <img src={shimmerUrl} alt="shimmer" style={styles.shimmerImage} draggable={false} />
+                <img
+                  src={shimmerUrl}
+                  alt="shimmer"
+                  style={styles.shimmerImage}
+                  draggable={false}
+                />
                 <span style={styles.positionNumber}>{player.position}</span>
                 <img
                   src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
@@ -243,14 +314,19 @@ export default function Leaderboard() {
               <div style={styles.tierColRow}>
                 {validGamemodes.map((mode, idx) => {
                   const kit = (player.kits || []).find(
-                    (k) => k.kit_name === mode || k.gamemode === mode || k.name === mode || k.type === mode
+                    (k) =>
+                      k.kit_name === mode ||
+                      k.gamemode === mode ||
+                      k.name === mode ||
+                      k.type === mode
                   );
 
                   const tierNameRaw = kit?.tier_name;
                   const peakTierNameRaw = kit?.peak_tier_name;
-                  const displayTierName = peakTierNameRaw && peakTierNameRaw !== tierNameRaw
-                    ? `Peak ${peakTierNameRaw}`
-                    : tierNameRaw || "N/A";
+                  const displayTierName =
+                    peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                      ? `Peak ${peakTierNameRaw}`
+                      : tierNameRaw || "N/A";
 
                   const isRetired = kit?.retired === true;
                   const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
@@ -258,7 +334,8 @@ export default function Leaderboard() {
                   const tierColors = getTierColors(tierNameRaw);
                   const points = kit?.points ?? 0;
 
-                  const showTooltip = hoveredTierIndex.row === index && hoveredTierIndex.col === idx;
+                  const showTooltip =
+                    hoveredTierIndex.row === index && hoveredTierIndex.col === idx;
 
                   return (
                     <div
@@ -270,7 +347,11 @@ export default function Leaderboard() {
                       <div style={styles.iconCircleWrapper}>
                         {isRanked ? (
                           <>
-                            <img src={getGamemodeIcon(mode)} alt="tier icon" style={styles.tierIcon} />
+                            <img
+                              src={getGamemodeIcon(mode)}
+                              alt="tier icon"
+                              style={styles.tierIcon}
+                            />
                             <div
                               style={{
                                 ...styles.iconOutline,
@@ -303,7 +384,9 @@ export default function Leaderboard() {
 
                       {showTooltip && (
                         <div style={styles.tierTooltip}>
-                          <div style={{ fontWeight: "1000", fontSize: 18 }}>{displayTierName || "N/A"}</div>
+                          <div style={{ fontWeight: "1000", fontSize: 18 }}>
+                            {displayTierName || "N/A"}
+                          </div>
                           <div>{points.toLocaleString()} points</div>
                         </div>
                       )}
@@ -322,6 +405,7 @@ export default function Leaderboard() {
 const styles = {
   outerWrapper: {
     backgroundColor: "#121821",
+    paddingBottom: "6rem",
     paddingTop: "4rem",
   },
   container: {
@@ -509,7 +593,7 @@ const styles = {
     height: 20,
     borderRadius: 4,
     objectFit: "contain",
-    transform: "translate(-50%, -50%)",
+    transform: "translate(-50%, -50)",
   },
   tierName: {
     borderRadius: 15,
@@ -536,6 +620,80 @@ const styles = {
     zIndex: 1001,
     userSelect: "none",
   },
+  topCard: {
+    backgroundColor: "#121821",
+    border: "2px solid #1f2937",
+    borderRadius: 24,
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+    maxWidth: 1200,
+    minWidth: 1200,
+    margin: "0 auto 2rem auto",
+    textAlign: "center",
+  },
+  topCardTitle: {
+    color: "#ffffff",
+    fontSize: 36,
+    fontWeight: 900,
+    marginBottom: "1rem",
+  },
+  topCardSubtitle: {
+    color: "#9ca3af",
+    fontSize: 20,
+  },
+  discordWrapper: {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    position: "relative",
+  },
+  discordIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 8,
+    userSelect: "none",
+  },
+  discordText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#e5e7eb",
+    userSelect: "none",
+    position: "relative",
+  },
+  discordPopup: {
+    position: "absolute",
+    top: "110%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "#121821",
+    border: "2px solid #1f2937",
+    borderRadius: 24,
+    padding: "1rem 2rem",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.7)",
+    whiteSpace: "nowrap",
+    zIndex: 1000,
+    userSelect: "none",
+  },
+  popupItem: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  popupIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
+    userSelect: "none",
+  },
+  popupLink: {
+    color: "#e5e7eb",
+    textDecoration: "none",
+    fontWeight: "700",
+    fontSize: 18,
+  },
+  message: {
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: "2rem",
+  },
 };
-
-
