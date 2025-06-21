@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
-import PageHeader from "../components/pageheader";
+import PageHeader from "../components/pageheader"; // <- import the header
 import SearchBar from "../components/searchbar";
 
 import HT1 from "../assets/HT1.webp";
@@ -55,6 +55,7 @@ function getDarkRegionColor(region) {
   }
 }
 
+// Simple in-file cache for fetch responses
 const fetchCache = {};
 
 async function cachedFetch(url) {
@@ -104,6 +105,7 @@ export default function TridentMace() {
     fetchData();
   }, [gamemode]);
 
+  // Return players with filtered non-retired kits per tier+HT/LT
   function getPlayersForTierEnding(ending) {
     return {
       HT: players
@@ -113,10 +115,10 @@ export default function TridentMace() {
             (k) =>
               k.kit_name === gamemode &&
               k.tier_name === `HT${ending}` &&
-              !k.retired
+              !k.retired // exclude retired kits only
           ),
         }))
-        .filter(({ kits }) => kits.length > 0),
+        .filter(({ kits }) => kits.length > 0), // only players with active kits here
 
       LT: players
         .map((p) => ({
@@ -141,19 +143,13 @@ export default function TridentMace() {
 
   return (
     <div style={styles.outerWrapper}>
+      {/* Reusable Header */}
       <PageHeader>
         <GamemodeTabs />
         <SearchBar />
       </PageHeader>
 
-      <div
-        style={{
-          overflowX: "auto",
-          WebkitOverflowScrolling: "touch",
-          marginTop: 12,
-        }}
-      ></div>
-
+      {/* Page Content */}
       <div style={styles.container}>
         {[1, 2, 3, 4, 5].map((num, idx) => {
           const tier = tierData[num - 1];
@@ -346,13 +342,11 @@ const styles = {
     backgroundColor: "#121821",
     paddingTop: "4rem",
     minHeight: "100vh",
-    boxSizing: "border-box",
-    width: "100%",
   },
   container: {
     maxWidth: 1200,
     margin: "0 auto 3rem auto",
-    padding: "3rem 1rem 2rem",
+    padding: "3rem 2rem 2rem",
     backgroundColor: "#121821",
     borderRadius: 24,
     border: "2px solid #1f2937",
@@ -362,7 +356,6 @@ const styles = {
     zIndex: 1,
     display: "flex",
     gap: 12,
-    flexWrap: "wrap",
   },
   strip: {
     flex: 1,
@@ -371,7 +364,6 @@ const styles = {
     flexDirection: "column",
     gap: 3,
     overflow: "hidden",
-    minWidth: 220,
   },
   tierEntry: {
     height: 30,
@@ -383,7 +375,6 @@ const styles = {
     fontWeight: "600",
     fontSize: 14,
     position: "relative",
-    boxSizing: "border-box",
   },
   regionStrip: {
     width: 5,
@@ -391,7 +382,6 @@ const styles = {
     borderRadius: 2,
     marginRight: 6,
     transition: "width 0.3s ease, background-color 0.3s ease",
-    boxSizing: "border-box",
   },
   skinFrame: {
     width: 27,
@@ -403,7 +393,6 @@ const styles = {
     justifyContent: "center",
     overflow: "hidden",
     marginRight: 6,
-    flexShrink: 0,
   },
   skin: {
     width: 25,
@@ -415,8 +404,5 @@ const styles = {
     textAlign: "left",
     paddingLeft: 8,
     fontSize: 14,
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
   },
 };
