@@ -1,10 +1,12 @@
 /* Global base styles */
-body {
-  background: #0d0d0d;
-  color: #e5e7eb; /* match React inline color */
-  font-family: 'Inter', sans-serif;
+html, body {
+  background: #121821; /* match container bg */
+  height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
+  color: #e5e7eb;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -44,13 +46,3 @@ button {
   cursor: pointer;
 }
 
-/* Mobile tweaks */
-@media (max-width: 768px) {
-  /* No forced width changes — rely on container's horizontal scroll */
-  /* You can add any specific tweaks here, e.g. font-size, padding */
-
-  /* Disable hover effects on mobile for performance */
-  *:hover {
-    none;
-  }
-}
