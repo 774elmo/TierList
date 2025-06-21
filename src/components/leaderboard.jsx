@@ -10,32 +10,25 @@ const validGamemodes = ["lifesteal", "trident_mace"];
 
 function regionColor(region) {
   switch (region) {
-    case "AS":
-      return "#422C3F";
-    case "EU":
-      return "#1C3E20";
-    case "NA":
-      return "#442228";
-    default:
-      return "#6b7280";
+    case "AS": return "#422C3F";
+    case "EU": return "#1C3E20";
+    case "NA": return "#442228";
+    default: return "#6b7280";
   }
 }
 
 function regionTextColor(region) {
   switch (region) {
-    case "AS":
-      return "#AF7F91";
-    case "EU":
-      return "#89F19C";
-    case "NA":
-      return "#D95C6A";
-    default:
-      return "#ffffff";
+    case "AS": return "#AF7F91";
+    case "EU": return "#89F19C";
+    case "NA": return "#D95C6A";
+    default: return "#ffffff";
   }
 }
 
 function getTierColors(tierName) {
   if (!tierName) return { backgroundColor: "#303144", color: "#81749A" };
+
   const tierMap = {
     LT3: { backgroundColor: "#593722", color: "#C67B42" },
     HT3: { backgroundColor: "#6B4B36", color: "#F79E59" },
@@ -44,9 +37,11 @@ function getTierColors(tierName) {
     LT1: { backgroundColor: "#584C25", color: "#D5B355" },
     HT1: { backgroundColor: "#6D5D2C", color: "#E8BA3A" },
   };
+
   if (["LT4", "HT4", "LT5", "HT5"].includes(tierName)) {
     return { backgroundColor: "#303144", color: "#81749A" };
   }
+
   return tierMap[tierName] || { backgroundColor: "#303144", color: "#81749A" };
 }
 
@@ -78,11 +73,31 @@ export default function Leaderboard() {
 
   const isMounted = useRef(true);
 
+  function fetchLeaderboardData() {
+    const baseUrl = "https://api.lifestealpvp.xyz/api/v1/data";
+    const url = gamemode === "overall" ? baseUrl : `${baseUrl}?gamemode=${gamemode}`;
+
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch leaderboard");
+        return res.json();
+      })
+      .then((data) => {
+        if (!isMounted.current) return;
+        setPlayers(data);
+        setCachedData(gamemode, data);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!isMounted.current) return;
+        setError("Could not load leaderboard data.");
+        setLoading(false);
+      });
+  }
+
   useEffect(() => {
     isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
+    return () => { isMounted.current = false; };
   }, []);
 
   function getCachedData(mode) {
@@ -124,29 +139,46 @@ export default function Leaderboard() {
     if (cachedData) {
       setPlayers(cachedData);
       setLoading(false);
-      return;
+    } else {
+      fetchLeaderboardData();
     }
 
-    const baseUrl = "https://api.lifestealpvp.xyz/api/v1/data";
-    const url = gamemode === "overall" ? baseUrl : `${baseUrl}?gamemode=${gamemode}`;
+    const interval = setInterval(() => {
+      fetchLeaderboardData();
+    }, 30000);
 
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch leaderboard");
-        return res.json();
-      })
-      .then((data) => {
-        if (!isMounted.current) return;
-        setPlayers(data);
-        setCachedData(gamemode, data);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!isMounted.current) return;
-        setError("Could not load leaderboard data.");
-        setLoading(false);
-      });
+    return () => clearInterval(interval);
   }, [gamemode, navigate]);
+
+  if (loading) {
+    return (
+      <div style={styles.loadingWrapper}>
+        <p style={styles.loadingText}>Loading Tiers</p>
+        <img src="/assets/loading.gif" alt="loading" style={styles.loadingGif} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p style={{ ...styles.message, color: "#ef4444" }}>{error}</p>
+    );
+  }
+
+  return (
+    <div style={styles.outerWrapper}>
+      <PageHeader>
+        <GamemodeTabs activeTab={gamemode} />
+        <SearchBar />
+      </PageHeader>
+
+      <div style={styles.container}>{renderOverall()}</div>
+
+      {selectedPlayer && (
+        <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
+      )}
+    </div>
+  );
 
   function renderOverall() {
     return (
@@ -159,9 +191,11 @@ export default function Leaderboard() {
           <div style={styles.regionCol}>Region</div>
           <div style={styles.tierCol}>Tiers</div>
         </div>
+
         {players.map((player, index) => {
           const shimmerUrl = getShimmerUrl(player.position);
           const isHovered = hoveredIndex === index;
+
           return (
             <div
               key={player.username}
@@ -189,9 +223,11 @@ export default function Leaderboard() {
                   draggable={false}
                 />
               </div>
+
               <div style={styles.usernameColRow} title={player.username}>
                 {player.username}
               </div>
+
               <div style={styles.regionCol}>
                 <div
                   style={{
@@ -203,21 +239,19 @@ export default function Leaderboard() {
                   {player.region || "N/A"}
                 </div>
               </div>
+
               <div style={styles.tierColRow}>
                 {validGamemodes.map((mode, idx) => {
                   const kit = (player.kits || []).find(
-                    (k) =>
-                      k.kit_name === mode ||
-                      k.gamemode === mode ||
-                      k.name === mode ||
-                      k.type === mode
+                    (k) => k.kit_name === mode || k.gamemode === mode || k.name === mode || k.type === mode
                   );
+
                   const tierNameRaw = kit?.tier_name;
                   const peakTierNameRaw = kit?.peak_tier_name;
-                  const displayTierName =
-                    peakTierNameRaw && peakTierNameRaw !== tierNameRaw
-                      ? `Peak ${peakTierNameRaw}`
-                      : tierNameRaw || "N/A";
+                  const displayTierName = peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                    ? `Peak ${peakTierNameRaw}`
+                    : tierNameRaw || "N/A";
+
                   const isRetired = kit?.retired === true;
                   const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
                   const isRanked = !!tierNameRaw;
@@ -236,11 +270,7 @@ export default function Leaderboard() {
                       <div style={styles.iconCircleWrapper}>
                         {isRanked ? (
                           <>
-                            <img
-                              src={getGamemodeIcon(mode)}
-                              alt="tier icon"
-                              style={styles.tierIcon}
-                            />
+                            <img src={getGamemodeIcon(mode)} alt="tier icon" style={styles.tierIcon} />
                             <div
                               style={{
                                 ...styles.iconOutline,
@@ -259,6 +289,7 @@ export default function Leaderboard() {
                           />
                         )}
                       </div>
+
                       <div
                         style={{
                           ...styles.tierName,
@@ -286,37 +317,6 @@ export default function Leaderboard() {
       </>
     );
   }
-
-  if (loading) {
-    return (
-      <div style={styles.loadingWrapper}>
-        <p style={styles.loadingText}>Loading Tiers</p>
-        <img src="/assets/loading.gif" alt="loading" style={styles.loadingGif} />
-      </div>
-    );
-  }
-
-  if (error)
-    return (
-      <p style={{ ...styles.message, color: "#ef4444" }}>
-        {error}
-      </p>
-    );
-
-  return (
-    <div style={styles.outerWrapper}>
-      <PageHeader>
-        <GamemodeTabs activeTab={gamemode} />
-        <SearchBar />
-      </PageHeader>
-
-      <div style={styles.container}>{renderOverall()}</div>
-
-      {selectedPlayer && (
-        <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
-      )}
-    </div>
-  );
 }
 
 const styles = {
