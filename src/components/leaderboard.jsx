@@ -186,7 +186,6 @@ export default function Leaderboard() {
                 backgroundColor: isHovered ? "#1f2937" : "#161E29",
                 transform: isHovered ? "translateX(-4px)" : "translateX(0)",
                 cursor: "pointer",
-                minWidth: isMobile ? "auto" : 600,
                 transition: "all 0.2s ease",
               }}
             >
