@@ -348,7 +348,7 @@ const styles = {
     minHeight: "100vh",
   },
   container: {
-    minWidth: 800,
+    minWidth: 1200,
     maxWidth: 1200,
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
@@ -361,6 +361,7 @@ const styles = {
     zIndex: 1,
     display: "flex",
     gap: 12,
+    boxSizing: "border-box",
   },
   strip: {
     flex: 1,
