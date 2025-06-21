@@ -55,7 +55,6 @@ function getDarkRegionColor(region) {
   }
 }
 
-// Simple in-file cache for fetch responses
 const fetchCache = {};
 
 async function cachedFetch(url) {
@@ -78,6 +77,8 @@ export default function TridentMace() {
   const [overallPlayers, setOverallPlayers] = useState([]);
   const [hoveredPlayer, setHoveredPlayer] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+
+  const isMobile = window.innerWidth <= 640;
 
   useEffect(() => {
     if (!validGamemodes.includes(gamemode)) {
@@ -142,13 +143,11 @@ export default function TridentMace() {
 
   return (
     <div style={styles.outerWrapper}>
-      {/* Reusable Header */}
       <PageHeader>
         <GamemodeTabs />
         <SearchBar />
       </PageHeader>
 
-      {/* Page Content */}
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         <div style={styles.container}>
           {[1, 2, 3, 4, 5].map((num, idx) => {
@@ -173,8 +172,8 @@ export default function TridentMace() {
                       src={tier.img}
                       alt={tier.label}
                       style={{
-                        height: 40,
-                        width: 40,
+                        height: isMobile ? 30 : 40,
+                        width: isMobile ? 30 : 40,
                         objectFit: "contain",
                         marginRight: 8,
                       }}
@@ -184,7 +183,7 @@ export default function TridentMace() {
                     style={{
                       color: tier.color,
                       fontWeight: "700",
-                      fontSize: 24,
+                      fontSize: isMobile ? 18 : 24,
                       userSelect: "none",
                     }}
                   >
@@ -224,7 +223,7 @@ export default function TridentMace() {
                           paddingLeft: 0,
                           color: brightColor,
                           fontWeight: "700",
-                          fontSize: 14,
+                          fontSize: isMobile ? 10 : 14,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
@@ -243,13 +242,15 @@ export default function TridentMace() {
                           style={styles.skin}
                         />
                       </div>
-                      <span style={styles.username}>{player.username}</span>
+                      <span style={{ ...styles.username, fontSize: isMobile ? 10 : 14 }}>
+                        {player.username}
+                      </span>
                       <img
                         src={caretDoubleUp}
                         alt="HT icon"
                         style={{
-                          width: 25,
-                          height: 20,
+                          width: isMobile ? 20 : 25,
+                          height: isMobile ? 16 : 20,
                           marginLeft: 6,
                           filter:
                             "invert(38%) sepia(51%) saturate(344%) hue-rotate(190deg) brightness(90%) contrast(85%)",
@@ -291,7 +292,7 @@ export default function TridentMace() {
                           paddingLeft: 0,
                           color: brightColor,
                           fontWeight: "700",
-                          fontSize: 14,
+                          fontSize: isMobile ? 10 : 14,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
@@ -310,13 +311,15 @@ export default function TridentMace() {
                           style={styles.skin}
                         />
                       </div>
-                      <span style={styles.username}>{player.username}</span>
+                      <span style={{ ...styles.username, fontSize: isMobile ? 10 : 14 }}>
+                        {player.username}
+                      </span>
                       <img
                         src={caretUp}
                         alt="LT icon"
                         style={{
-                          width: 25,
-                          height: 20,
+                          width: isMobile ? 20 : 25,
+                          height: isMobile ? 16 : 20,
                           marginLeft: 6,
                           filter:
                             "invert(20%) sepia(45%) saturate(310%) hue-rotate(200deg) brightness(80%) contrast(85%)",
@@ -345,7 +348,7 @@ const styles = {
     minHeight: "100vh",
   },
   container: {
-    minWidth: 800, // added to make it scrollable when needed
+    minWidth: 800,
     maxWidth: 1200,
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
