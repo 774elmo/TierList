@@ -150,6 +150,7 @@ export default function TridentMace() {
       </PageHeader>
 
       {/* Page Content */}
+    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}></div>
       <div style={styles.container}>
         {[1, 2, 3, 4, 5].map((num, idx) => {
           const tier = tierData[num - 1];

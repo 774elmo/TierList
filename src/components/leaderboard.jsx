@@ -310,7 +310,10 @@ export default function Leaderboard() {
         <SearchBar />
       </PageHeader>
 
-      <div style={styles.container}>{renderOverall()}</div>
+    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+       <div style={styles.container}>{renderOverall()}</div>
+    </div>
+
 
       {selectedPlayer && (
         <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
