@@ -61,35 +61,6 @@ function getShimmerUrl(position) {
   return shimmerUrls[position] || shimmerUrls.other;
 }
 
-function ScaleWrapper({ baseWidth = 1200, children }) {
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    function onResize() {
-      const viewportWidth = window.innerWidth;
-      // Calculate scale ratio but don't upscale beyond 1
-      const newScale = Math.min(1, viewportWidth / baseWidth);
-      setScale(newScale);
-    }
-    window.addEventListener("resize", onResize);
-    onResize(); // initial call
-    return () => window.removeEventListener("resize", onResize);
-  }, [baseWidth]);
-
-  return (
-    <div
-      style={{
-        transformOrigin: "top left",
-        transform: `scale(${scale})`,
-        width: `${100 / scale}%`, // counteract scaling for layout
-        height: "auto",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 const STORAGE_KEY_PREFIX = "leaderboard_cache_";
 const CACHE_EXPIRATION = 10 * 60 * 1000;
 
@@ -332,9 +303,8 @@ export default function Leaderboard() {
       </p>
     );
 
-return (
-  <div style={styles.outerWrapper}>
-    <ScaleWrapper baseWidth={1200}>
+  return (
+    <div style={styles.outerWrapper}>
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
         <SearchBar />
@@ -347,10 +317,8 @@ return (
       {selectedPlayer && (
         <ProfileOverlay player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
       )}
-    </ScaleWrapper>
-  </div>
-);
-
+    </div>
+  );
 }
 
 const styles = {
@@ -360,6 +328,7 @@ const styles = {
   },
   container: {
     maxWidth: 1200,
+    minWidth: 1200, // Prevent container from shrinking below 1200px
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
     backgroundColor: "#121821",
@@ -369,6 +338,7 @@ const styles = {
     fontSize: 20,
     position: "relative",
     zIndex: 1,
+    boxSizing: "border-box",
   },
   message: {
     textAlign: "center",
@@ -400,6 +370,7 @@ const styles = {
     alignItems: "center",
     gap: 24,
     height: 70,
+    flexShrink: 0, // Prevent shrinking
   },
   ribbonHeaderCol: {
     width: 150,
@@ -446,6 +417,7 @@ const styles = {
     gap: 24,
     minHeight: 70,
     cursor: "default",
+    flexShrink: 0, // Prevent shrinking
   },
   ribbon: {
     position: "relative",
