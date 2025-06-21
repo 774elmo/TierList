@@ -326,7 +326,7 @@ const styles = {
   },
   container: {
     maxWidth: 1200,
-    minWidth: 1200,          // FIXED width forcing horizontal scroll on narrow screens
+    minWidth: 1200,
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
     backgroundColor: "#121821",
@@ -336,7 +336,7 @@ const styles = {
     fontSize: 20,
     position: "relative",
     zIndex: 1,
-    overflowX: "auto",       // horizontal scroll if viewport < 1200
+    overflowX: "auto",
     WebkitOverflowScrolling: "touch",
   },
   headerRow: {
@@ -349,10 +349,10 @@ const styles = {
     alignItems: "center",
     gap: 12,
     height: "auto",
-    flexWrap: "nowrap",      // no wrap needed, fixed container width
+    flexWrap: "nowrap",
   },
   ribbonHeaderCol: {
-    width: 150,              // fixed widths matching container layout
+    width: 150,
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -399,7 +399,7 @@ const styles = {
     gap: 24,
     minHeight: 70,
     cursor: "pointer",
-    flexWrap: "nowrap",      // no wrap, fixed container width
+    flexWrap: "nowrap",
   },
   ribbon: {
     position: "relative",
