@@ -6,6 +6,9 @@ import ProfileOverlay from "../components/profileoverlay";
 import PageHeader from "../components/pageheader";
 import SearchBar from "./searchbar";
 import DiscordIcon from "../assets/discord.svg";
+import CaretUpIcon from "../assets/caret-up.svg";
+import SMPTiersImage from "../assets/smptiers.png";
+
 
 const validGamemodes = ["lifesteal", "trident_mace"];
 
@@ -73,7 +76,12 @@ export default function Leaderboard() {
   const navigate = useNavigate();
   const gamemode = rawGamemode || "overall";
 
-  const [showPopup, setShowPopup] = useState(false);
+  // --- Updated states for Discord popup hover logic ---
+  const [hoveringTrigger, setHoveringTrigger] = useState(false);
+  const [hoveringPopup, setHoveringPopup] = useState(false);
+  // popup visible if either hover state is true
+  const showPopup = hoveringTrigger || hoveringPopup;
+
   const [lifestealLink] = useState("https://discord.gg/lifestealpvp");
   const [tridentLink] = useState("https://discord.gg/your-tridentmace-link");
 
@@ -181,57 +189,83 @@ export default function Leaderboard() {
   return (
     <div style={styles.outerWrapper}>
       {/* Discord Card */}
-      <div style={styles.topCard}>
-        <div style={styles.discordWrapper}>
-          <img
-            src={DiscordIcon}
-            alt="Discord"
-            style={styles.discordIcon}
-            draggable={false}
-          />
-          <div
-            style={styles.discordText}
-            onMouseEnter={() => setShowPopup(true)}
-            onMouseLeave={() => setShowPopup(false)}
-          >
-            Discords ^
+            <div style={styles.topCard}>
+        {/* Left: Absolute image */}
+        <img src={SMPTiersImage} alt="smptiers" style={styles.smptiersImage} />
+
+
+        {/* Center: Discord Wrapper */}
+        <div
+            style={{ position: "relative", display: "inline-block" }}
+            onMouseEnter={() => setHoveringTrigger(true)}
+            onMouseLeave={() => setHoveringTrigger(false)}
+        >
+            <div style={styles.discordWrapper}>
+            <img
+                src={DiscordIcon}
+                alt="Discord"
+                style={styles.discordIcon}
+                draggable={false}
+            />
+            <div style={styles.discordText}>
+                Discords{" "}
+                <img
+                src={CaretUpIcon}
+                alt="caret up"
+                style={{
+                    width: 15,
+                    height: 15,
+                    marginLeft: 6,
+                    verticalAlign: "middle",
+                    userSelect: "none",
+                    filter: "invert(100%)",
+                }}
+                draggable={false}
+                />
+            </div>
+            </div>
+
             {showPopup && (
-              <div style={styles.discordPopup}>
+            <div
+                style={styles.discordPopup}
+                onMouseEnter={() => setHoveringPopup(true)}
+                onMouseLeave={() => setHoveringPopup(false)}
+            >
                 <div style={styles.popupItem}>
-                  <img
+                <img
                     src={getGamemodeIcon("lifesteal")}
                     alt="Lifesteal"
                     style={styles.popupIcon}
-                  />
-                  <a
+                />
+                <a
                     href={lifestealLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={styles.popupLink}
-                  >
+                >
                     Lifesteal
-                  </a>
+                </a>
                 </div>
                 <div style={styles.popupItem}>
-                  <img
+                <img
                     src={getGamemodeIcon("trident_mace")}
                     alt="Trident Mace"
                     style={styles.popupIcon}
-                  />
-                  <a
+                />
+                <a
                     href={tridentLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={styles.popupLink}
-                  >
+                >
                     Trident Mace
-                  </a>
+                </a>
                 </div>
-              </div>
+            </div>
             )}
-          </div>
         </div>
-      </div>
+        </div>
+
 
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
@@ -277,6 +311,7 @@ export default function Leaderboard() {
                 transform: isHovered ? "translateX(-4px)" : "translateX(0)",
                 transition: "all 0.2s ease",
                 cursor: "pointer",
+                flexWrap: "nowrap",
               }}
             >
               <div style={styles.ribbon}>
@@ -406,7 +441,7 @@ const styles = {
   outerWrapper: {
     backgroundColor: "#121821",
     paddingBottom: "6rem",
-    paddingTop: "4rem",
+    paddingTop: "2rem",
   },
   container: {
     maxWidth: 1200,
@@ -594,7 +629,6 @@ const styles = {
     borderRadius: 4,
     objectFit: "contain",
     transform: "translate(-50%, -50%)",
-
   },
   tierName: {
     borderRadius: 15,
@@ -629,28 +663,24 @@ const styles = {
     paddingRight: "2rem",
     maxWidth: 1200,
     minWidth: 1200,
+    display: "flex",
+    minHeight: 60,
+    justifyContent: "center", // Center the discord wrapper
+    alignItems: "center",
     margin: "0 auto 2rem auto",
     textAlign: "center",
-  },
-  topCardTitle: {
-    color: "#ffffff",
-    fontSize: 36,
-    fontWeight: 900,
-    marginBottom: "1rem",
-  },
-  topCardSubtitle: {
-    color: "#9ca3af",
-    fontSize: 20,
+    position: "relative", // IMPORTANT: to position the image absolutely
   },
   discordWrapper: {
     display: "flex",
     alignItems: "center",
     cursor: "pointer",
+    justifyContent: "center",
     position: "relative",
   },
   discordIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
     marginRight: 8,
     userSelect: "none",
   },
@@ -670,7 +700,6 @@ const styles = {
     border: "2px solid #1f2937",
     borderRadius: 24,
     padding: "1rem 2rem",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.7)",
     whiteSpace: "nowrap",
     zIndex: 1000,
     userSelect: "none",
@@ -696,5 +725,12 @@ const styles = {
     fontSize: 20,
     textAlign: "center",
     marginTop: "2rem",
+  },
+  smptiersImage: {
+    width: 200,
+    height: 100,
+    userSelect: "none",
+    position: "absolute", // pin to left
+    left: 0,
   },
 };
