@@ -9,7 +9,6 @@ import DiscordIcon from "../assets/discord.svg";
 import CaretUpIcon from "../assets/caret-up.svg";
 import SMPTiersImage from "../assets/smptiers.png";
 
-
 const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
 function regionColor(region) {
@@ -177,12 +176,7 @@ export default function Leaderboard() {
   }, [gamemode, navigate]);
 
   if (loading) {
-    return (
-      <div style={styles.loadingWrapper}>
-        <p style={styles.loadingText}>Loading Tiers</p>
-        <img src="/assets/loading.gif" alt="loading" style={styles.loadingGif} />
-      </div>
-    );
+    return null; // removed loading text and gif
   }
 
   if (error) {
@@ -192,128 +186,126 @@ export default function Leaderboard() {
   return (
     <div style={styles.outerWrapper}>
       {/* Discord Card */}
-            <div style={styles.topCard}>
+      <div style={styles.topCard}>
         {/* Left: Absolute image */}
         <img src={SMPTiersImage} alt="smptiers" style={styles.smptiersImage} />
 
-
         {/* Center: Discord Wrapper */}
         <div
-            style={{ position: "relative", display: "inline-block" }}
-            onMouseEnter={() => setHoveringTrigger(true)}
-            onMouseLeave={() => setHoveringTrigger(false)}
+          style={{ position: "relative", display: "inline-block" }}
+          onMouseEnter={() => setHoveringTrigger(true)}
+          onMouseLeave={() => setHoveringTrigger(false)}
         >
-            <div style={styles.discordWrapper}>
+          <div style={styles.discordWrapper}>
             <img
-                src={DiscordIcon}
-                alt="Discord"
-                style={styles.discordIcon}
-                draggable={false}
+              src={DiscordIcon}
+              alt="Discord"
+              style={styles.discordIcon}
+              draggable={false}
             />
             <div style={styles.discordText}>
-                Discords{" "}
-                <img
+              Discords{" "}
+              <img
                 src={CaretUpIcon}
                 alt="caret up"
                 style={{
-                    width: 15,
-                    height: 15,
-                    marginLeft: 6,
-                    verticalAlign: "middle",
-                    userSelect: "none",
-                    filter: "invert(100%)",
+                  width: 15,
+                  height: 15,
+                  marginLeft: 6,
+                  verticalAlign: "middle",
+                  userSelect: "none",
+                  filter: "invert(100%)",
                 }}
                 draggable={false}
-                />
+              />
             </div>
-            </div>
+          </div>
 
-            {showPopup && (
+          {showPopup && (
             <div
-                style={styles.discordPopup}
-                onMouseEnter={() => setHoveringPopup(true)}
-                onMouseLeave={() => setHoveringPopup(false)}
+              style={styles.discordPopup}
+              onMouseEnter={() => setHoveringPopup(true)}
+              onMouseLeave={() => setHoveringPopup(false)}
             >
-                <div style={styles.popupItem}>
+              <div style={styles.popupItem}>
                 <img
-                    src={getGamemodeIcon("lifesteal")}
-                    alt="Lifesteal"
-                    style={styles.popupIcon}
+                  src={getGamemodeIcon("lifesteal")}
+                  alt="Lifesteal"
+                  style={styles.popupIcon}
                 />
                 <a
-                    href={lifestealLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
+                  href={lifestealLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.popupLink}
                 >
-                    Lifesteal
+                  Lifesteal
                 </a>
-                </div>
-                <div style={styles.popupItem}>
+              </div>
+              <div style={styles.popupItem}>
                 <img
-                    src={getGamemodeIcon("infuse")}
-                    alt="Infuse"
-                    style={styles.popupIcon}
+                  src={getGamemodeIcon("infuse")}
+                  alt="Infuse"
+                  style={styles.popupIcon}
                 />
                 <a
-                    href={infuseLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
+                  href={infuseLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.popupLink}
                 >
-                    Infuse
+                  Infuse
                 </a>
-                </div>
-                <div style={styles.popupItem}>
+              </div>
+              <div style={styles.popupItem}>
                 <img
-                    src={getGamemodeIcon("glitch")}
-                    alt="Glitch"
-                    style={styles.popupIcon}
+                  src={getGamemodeIcon("glitch")}
+                  alt="Glitch"
+                  style={styles.popupIcon}
                 />
                 <a
-                    href={glitchLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
+                  href={glitchLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.popupLink}
                 >
-                    Glitch
+                  Glitch
                 </a>
-                </div>
-                <div style={styles.popupItem}>
+              </div>
+              <div style={styles.popupItem}>
                 <img
-                    src={getGamemodeIcon("bliss")}
-                    alt="Bliss"
-                    style={styles.popupIcon}
+                  src={getGamemodeIcon("bliss")}
+                  alt="Bliss"
+                  style={styles.popupIcon}
                 />
                 <a
-                    href={blissLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
+                  href={blissLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.popupLink}
                 >
-                    Bliss
+                  Bliss
                 </a>
-                </div>
-                <div style={styles.popupItem}>
+              </div>
+              <div style={styles.popupItem}>
                 <img
-                    src={getGamemodeIcon("strength")}
-                    alt="Strength"
-                    style={styles.popupIcon}
+                  src={getGamemodeIcon("strength")}
+                  alt="Strength"
+                  style={styles.popupIcon}
                 />
                 <a
-                    href={strengthLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
+                  href={strengthLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.popupLink}
                 >
-                    Strength
+                  Strength
                 </a>
-                </div>
+              </div>
             </div>
-            )}
+          )}
         </div>
-        </div>
-
+      </div>
 
       <PageHeader>
         <GamemodeTabs activeTab={gamemode} />
@@ -328,172 +320,172 @@ export default function Leaderboard() {
     </div>
   );
 
-function renderOverall() {
-  return (
-    <>
-      <div style={styles.headerRow}>
-        <div style={styles.ribbonHeaderCol}>
-          <span style={styles.hashHeader}>#</span>
+  function renderOverall() {
+    return (
+      <>
+        <div style={styles.headerRow}>
+          <div style={styles.ribbonHeaderCol}>
+            <span style={styles.hashHeader}>#</span>
+          </div>
+          <div style={styles.usernameCol}>Player</div>
+          <div style={styles.regionCol}>Region</div>
+          <div style={styles.tierCol}>Tiers</div>
         </div>
-        <div style={styles.usernameCol}>Player</div>
-        <div style={styles.regionCol}>Region</div>
-        <div style={styles.tierCol}>Tiers</div>
-      </div>
 
-      {players.map((player, index) => {
-        const shimmerUrl = getShimmerUrl(player.position);
-        const isHovered = hoveredIndex === index;
+        {players.map((player, index) => {
+          const shimmerUrl = getShimmerUrl(player.position);
+          const isHovered = hoveredIndex === index;
 
-        return (
-          <div
-            key={player.username}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => {
-              setHoveredIndex(null);
-              setHoveredTierIndex({ row: null, col: null });
-            }}
-            onClick={() => setSelectedPlayer(player)}
-            style={{
-              ...styles.row,
-              backgroundColor: isHovered ? "#1f2937" : "#161E29",
-              transform: isHovered ? "translateX(-4px)" : "translateX(0)",
-              transition: "all 0.2s ease",
-              cursor: "pointer",
-              flexWrap: "nowrap",
-            }}
-          >
-            <div style={styles.ribbon}>
-              <img src={shimmerUrl} alt="shimmer" style={styles.shimmerImage} draggable={false} />
-              <span style={styles.positionNumber}>{player.position}</span>
-              <img
-                src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-                alt={player.username}
-                style={styles.skinImageInRibbon}
-                draggable={false}
-              />
-            </div>
-
-            <div style={styles.usernameColRow} title={player.username}>
-              {player.username}
-            </div>
-
-            <div style={styles.regionCol}>
-              <div
-                style={{
-                  ...styles.region,
-                  backgroundColor: regionColor(player.region),
-                  color: regionTextColor(player.region),
-                }}
-              >
-                {player.region || "N/A"}
+          return (
+            <div
+              key={player.username}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => {
+                setHoveredIndex(null);
+                setHoveredTierIndex({ row: null, col: null });
+              }}
+              onClick={() => setSelectedPlayer(player)}
+              style={{
+                ...styles.row,
+                backgroundColor: isHovered ? "#1f2937" : "#161E29",
+                transform: isHovered ? "translateX(-4px)" : "translateX(0)",
+                transition: "all 0.2s ease",
+                cursor: "pointer",
+                flexWrap: "nowrap",
+              }}
+            >
+              <div style={styles.ribbon}>
+                <img src={shimmerUrl} alt="shimmer" style={styles.shimmerImage} draggable={false} />
+                <span style={styles.positionNumber}>{player.position}</span>
+                <img
+                  src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+                  alt={player.username}
+                  style={styles.skinImageInRibbon}
+                  draggable={false}
+                />
               </div>
-            </div>
 
-            <div style={{ ...styles.tierColRow, display: "flex", gap: 10, flexWrap: "wrap" }}>
-              {(() => {
-                const rankedBadges = [];
-                const unrankedBadges = [];
+              <div style={styles.usernameColRow} title={player.username}>
+                {player.username}
+              </div>
 
-                validGamemodes.forEach((mode, idx) => {
-                  const kit = (player.kits || []).find(
-                    (k) =>
-                      k.kit_name === mode ||
-                      k.gamemode === mode ||
-                      k.name === mode ||
-                      k.type === mode
-                  );
+              <div style={styles.regionCol}>
+                <div
+                  style={{
+                    ...styles.region,
+                    backgroundColor: regionColor(player.region),
+                    color: regionTextColor(player.region),
+                  }}
+                >
+                  {player.region || "N/A"}
+                </div>
+              </div>
 
-                  const tierNameRaw = kit?.tier_name;
-                  const peakTierNameRaw = kit?.peak_tier_name;
-                  const displayTierName =
-                    peakTierNameRaw && peakTierNameRaw !== tierNameRaw
-                      ? `Peak ${peakTierNameRaw}`
-                      : tierNameRaw || "N/A";
+              <div style={{ ...styles.tierColRow, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {(() => {
+                  const rankedBadges = [];
+                  const unrankedBadges = [];
 
-                  const isRetired = kit?.retired === true;
-                  const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
-                  const isRanked = !!tierNameRaw;
-                  const tierColors = getTierColors(tierNameRaw);
-                  const points = kit?.points ?? 0;
+                  validGamemodes.forEach((mode, idx) => {
+                    const kit = (player.kits || []).find(
+                      (k) =>
+                        k.kit_name === mode ||
+                        k.gamemode === mode ||
+                        k.name === mode ||
+                        k.type === mode
+                    );
 
-                  const showTooltip =
-                    hoveredTierIndex.row === index && hoveredTierIndex.col === idx;
+                    const tierNameRaw = kit?.tier_name;
+                    const peakTierNameRaw = kit?.peak_tier_name;
+                    const displayTierName =
+                      peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                        ? `Peak ${peakTierNameRaw}`
+                        : tierNameRaw || "N/A";
 
-                  const badge = (
-                    <div
-                      key={idx}
-                      style={styles.tierBadge}
-                      onMouseEnter={() => setHoveredTierIndex({ row: index, col: idx })}
-                      onMouseLeave={() => setHoveredTierIndex({ row: null, col: null })}
-                    >
-                      <div style={styles.iconCircleWrapper}>
-                        {isRanked ? (
-                          <>
-                            <img
-                              src={getGamemodeIcon(mode)}
-                              alt="tier icon"
-                              style={styles.tierIcon}
-                            />
+                    const isRetired = kit?.retired === true;
+                    const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
+                    const isRanked = !!tierNameRaw;
+                    const tierColors = getTierColors(tierNameRaw);
+                    const points = kit?.points ?? 0;
+
+                    const showTooltip =
+                      hoveredTierIndex.row === index && hoveredTierIndex.col === idx;
+
+                    const badge = (
+                      <div
+                        key={idx}
+                        style={styles.tierBadge}
+                        onMouseEnter={() => setHoveredTierIndex({ row: index, col: idx })}
+                        onMouseLeave={() => setHoveredTierIndex({ row: null, col: null })}
+                      >
+                        <div style={styles.iconCircleWrapper}>
+                          {isRanked ? (
+                            <>
+                              <img
+                                src={getGamemodeIcon(mode)}
+                                alt="tier icon"
+                                style={styles.tierIcon}
+                              />
+                              <div
+                                style={{
+                                  ...styles.iconOutline,
+                                  borderColor: tierColors.backgroundColor,
+                                  borderStyle: "solid",
+                                }}
+                              />
+                            </>
+                          ) : (
                             <div
                               style={{
                                 ...styles.iconOutline,
-                                borderColor: tierColors.backgroundColor,
-                                borderStyle: "solid",
+                                borderColor: "#354153",
+                                borderStyle: "dotted",
                               }}
                             />
-                          </>
-                        ) : (
-                          <div
-                            style={{
-                              ...styles.iconOutline,
-                              borderColor: "#354153",
-                              borderStyle: "dotted",
-                            }}
-                          />
+                          )}
+                        </div>
+
+                        <div
+                          style={{
+                            ...styles.tierName,
+                            backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
+                            color: isRanked ? tierColors.color : "#354153",
+                          }}
+                          title={tierName || "Unranked"}
+                        >
+                          {isRanked ? tierName : "—"}
+                        </div>
+
+                        {showTooltip && (
+                          <div style={styles.tierTooltip}>
+                            <div style={{ fontWeight: "1000", fontSize: 18 }}>
+                              {displayTierName || "N/A"}
+                            </div>
+                            <div>{points.toLocaleString()} points</div>
+                          </div>
                         )}
                       </div>
+                    );
 
-                      <div
-                        style={{
-                          ...styles.tierName,
-                          backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
-                          color: isRanked ? tierColors.color : "#354153",
-                        }}
-                        title={tierName || "Unranked"}
-                      >
-                        {isRanked ? tierName : "—"}
-                      </div>
+                    if (isRanked) {
+                      rankedBadges.push(badge);
+                    } else {
+                      unrankedBadges.push(badge);
+                    }
+                  });
 
-                      {showTooltip && (
-                        <div style={styles.tierTooltip}>
-                          <div style={{ fontWeight: "1000", fontSize: 18 }}>
-                            {displayTierName || "N/A"}
-                          </div>
-                          <div>{points.toLocaleString()} points</div>
-                        </div>
-                      )}
-                    </div>
-                  );
-
-                  if (isRanked) {
-                    rankedBadges.push(badge);
-                  } else {
-                    unrankedBadges.push(badge);
-                  }
-                });
-
-                // Return ranked badges first, then unranked, all in one flex container
-                return [...rankedBadges, ...unrankedBadges];
-              })()}
+                  // Return ranked badges first, then unranked, all in one flex container
+                  return [...rankedBadges, ...unrankedBadges];
+                })()}
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </>
-  );
+          );
+        })}
+      </>
+    );
+  }
 }
 
-}
 
 const styles = {
   outerWrapper: {
@@ -633,8 +625,8 @@ const styles = {
     textOverflow: "ellipsis",
   },
   region: {
-    fontSize: 25,
-    padding: "6px 8px",
+    fontSize: 20,
+    padding: "6px 12px",
     borderRadius: 12,
     minWidth: 35,
     textAlign: "center",
@@ -659,7 +651,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
     flexShrink: 0,
   },
   iconCircleWrapper: {
@@ -691,9 +683,9 @@ const styles = {
   tierName: {
     borderRadius: 15,
     padding: "0px 1px",
-    fontWeight: 900,
-    fontSize: 18,
-    minWidth: 42,
+    fontWeight: 800,
+    fontSize: 15,
+    minWidth: 40,
     textAlign: "center",
     marginTop: -5,
     userSelect: "none",

@@ -357,8 +357,8 @@ const styles = {
     color: "#e5e7eb",
   },
   overallIcon: {
-    width: 35,
-    height: 35,
+    width: 45,
+    height: 45,
     borderRadius: 12,
   },
   overallText: {
@@ -387,7 +387,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
     flexShrink: 0,
   },
   iconCircleWrapper: {
@@ -419,9 +419,9 @@ const styles = {
   tierName: {
     borderRadius: 15,
     padding: "0px 1px",
-    fontWeight: 1000,
-    fontSize: 20,
-    minWidth: 42,
+    fontWeight: 800,
+    fontSize: 15,
+    minWidth: 40,
     textAlign: "center",
     marginTop: -5,
     userSelect: "none",
