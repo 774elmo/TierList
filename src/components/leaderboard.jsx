@@ -10,7 +10,7 @@ import CaretUpIcon from "../assets/caret-up.svg";
 import SMPTiersImage from "../assets/smptiers.png";
 
 
-const validGamemodes = ["lifesteal", "trident_mace"];
+const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
 function regionColor(region) {
   switch (region) {
@@ -83,7 +83,10 @@ export default function Leaderboard() {
   const showPopup = hoveringTrigger || hoveringPopup;
 
   const [lifestealLink] = useState("https://discord.gg/lifestealpvp");
-  const [tridentLink] = useState("https://discord.gg/your-tridentmace-link");
+  const [strengthLink] = useState("https://discord.gg/W58sv4nrRS");
+  const [infuseLink] = useState("https://discord.gg/HF3m4b3HQF");
+  const [glitchLink] = useState("https://discord.gg/G2BJc8NfDd");
+  const [blissLink] = useState("https://discord.gg/WkTkYMUGsK");
 
   const [players, setPlayers] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -248,17 +251,62 @@ export default function Leaderboard() {
                 </div>
                 <div style={styles.popupItem}>
                 <img
-                    src={getGamemodeIcon("trident_mace")}
-                    alt="Trident Mace"
+                    src={getGamemodeIcon("infuse")}
+                    alt="Infuse"
                     style={styles.popupIcon}
                 />
                 <a
-                    href={tridentLink}
+                    href={infuseLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={styles.popupLink}
                 >
-                    Trident Mace
+                    Infuse
+                </a>
+                </div>
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("glitch")}
+                    alt="Glitch"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={glitchLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Glitch
+                </a>
+                </div>
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("bliss")}
+                    alt="Bliss"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={blissLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Bliss
+                </a>
+                </div>
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("strength")}
+                    alt="Strength"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={strengthLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Strength
                 </a>
                 </div>
             </div>
@@ -280,74 +328,73 @@ export default function Leaderboard() {
     </div>
   );
 
-  function renderOverall() {
-    return (
-      <>
-        <div style={styles.headerRow}>
-          <div style={styles.ribbonHeaderCol}>
-            <span style={styles.hashHeader}>#</span>
-          </div>
-          <div style={styles.usernameCol}>Player</div>
-          <div style={styles.regionCol}>Region</div>
-          <div style={styles.tierCol}>Tiers</div>
+function renderOverall() {
+  return (
+    <>
+      <div style={styles.headerRow}>
+        <div style={styles.ribbonHeaderCol}>
+          <span style={styles.hashHeader}>#</span>
         </div>
+        <div style={styles.usernameCol}>Player</div>
+        <div style={styles.regionCol}>Region</div>
+        <div style={styles.tierCol}>Tiers</div>
+      </div>
 
-        {players.map((player, index) => {
-          const shimmerUrl = getShimmerUrl(player.position);
-          const isHovered = hoveredIndex === index;
+      {players.map((player, index) => {
+        const shimmerUrl = getShimmerUrl(player.position);
+        const isHovered = hoveredIndex === index;
 
-          return (
-            <div
-              key={player.username}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => {
-                setHoveredIndex(null);
-                setHoveredTierIndex({ row: null, col: null });
-              }}
-              onClick={() => setSelectedPlayer(player)}
-              style={{
-                ...styles.row,
-                backgroundColor: isHovered ? "#1f2937" : "#161E29",
-                transform: isHovered ? "translateX(-4px)" : "translateX(0)",
-                transition: "all 0.2s ease",
-                cursor: "pointer",
-                flexWrap: "nowrap",
-              }}
-            >
-              <div style={styles.ribbon}>
-                <img
-                  src={shimmerUrl}
-                  alt="shimmer"
-                  style={styles.shimmerImage}
-                  draggable={false}
-                />
-                <span style={styles.positionNumber}>{player.position}</span>
-                <img
-                  src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-                  alt={player.username}
-                  style={styles.skinImageInRibbon}
-                  draggable={false}
-                />
+        return (
+          <div
+            key={player.username}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => {
+              setHoveredIndex(null);
+              setHoveredTierIndex({ row: null, col: null });
+            }}
+            onClick={() => setSelectedPlayer(player)}
+            style={{
+              ...styles.row,
+              backgroundColor: isHovered ? "#1f2937" : "#161E29",
+              transform: isHovered ? "translateX(-4px)" : "translateX(0)",
+              transition: "all 0.2s ease",
+              cursor: "pointer",
+              flexWrap: "nowrap",
+            }}
+          >
+            <div style={styles.ribbon}>
+              <img src={shimmerUrl} alt="shimmer" style={styles.shimmerImage} draggable={false} />
+              <span style={styles.positionNumber}>{player.position}</span>
+              <img
+                src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+                alt={player.username}
+                style={styles.skinImageInRibbon}
+                draggable={false}
+              />
+            </div>
+
+            <div style={styles.usernameColRow} title={player.username}>
+              {player.username}
+            </div>
+
+            <div style={styles.regionCol}>
+              <div
+                style={{
+                  ...styles.region,
+                  backgroundColor: regionColor(player.region),
+                  color: regionTextColor(player.region),
+                }}
+              >
+                {player.region || "N/A"}
               </div>
+            </div>
 
-              <div style={styles.usernameColRow} title={player.username}>
-                {player.username}
-              </div>
+            <div style={{ ...styles.tierColRow, display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {(() => {
+                const rankedBadges = [];
+                const unrankedBadges = [];
 
-              <div style={styles.regionCol}>
-                <div
-                  style={{
-                    ...styles.region,
-                    backgroundColor: regionColor(player.region),
-                    color: regionTextColor(player.region),
-                  }}
-                >
-                  {player.region || "N/A"}
-                </div>
-              </div>
-
-              <div style={styles.tierColRow}>
-                {validGamemodes.map((mode, idx) => {
+                validGamemodes.forEach((mode, idx) => {
                   const kit = (player.kits || []).find(
                     (k) =>
                       k.kit_name === mode ||
@@ -372,7 +419,7 @@ export default function Leaderboard() {
                   const showTooltip =
                     hoveredTierIndex.row === index && hoveredTierIndex.col === idx;
 
-                  return (
+                  const badge = (
                     <div
                       key={idx}
                       style={styles.tierBadge}
@@ -427,14 +474,25 @@ export default function Leaderboard() {
                       )}
                     </div>
                   );
-                })}
-              </div>
+
+                  if (isRanked) {
+                    rankedBadges.push(badge);
+                  } else {
+                    unrankedBadges.push(badge);
+                  }
+                });
+
+                // Return ranked badges first, then unranked, all in one flex container
+                return [...rankedBadges, ...unrankedBadges];
+              })()}
             </div>
-          );
-        })}
-      </>
-    );
-  }
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
 }
 
 const styles = {

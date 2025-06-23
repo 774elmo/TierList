@@ -1,9 +1,15 @@
-import lifestealTabIcon from "../assets/lifesteal.webp";
-import maceTabIcon from "../assets/trident_mace.webp";
+import lifestealIcon from "../assets/lifesteal.webp";
+import infuseIcon from "../assets/infuse.webp";
+import glitchIcon from "../assets/glitch.webp";
+import strengthIcon from "../assets/strength.webp";
+import blissIcon from "../assets/bliss.webp";
 
 const tabIcons = {
-  lifesteal: lifestealTabIcon,
-  trident_mace: maceTabIcon,
+    infuse: infuseIcon,
+    lifesteal: lifestealIcon,
+    glitch: glitchIcon,
+    strength: strengthIcon,
+    bliss: blissIcon,
 };
 
 export function getTabIcon(gamemode) {

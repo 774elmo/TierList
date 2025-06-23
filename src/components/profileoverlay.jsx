@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import overallIcon from "../assets/overall.webp";
 import { getGamemodeIcon } from "./gamemodeicons";
 
-const validGamemodes = ["lifesteal", "trident_mace"];
+const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
 function regionColor(region) {
   switch (region) {
@@ -120,80 +120,99 @@ export default function ProfileOverlay({ player, onClose }) {
         <div style={styles.sectionHeader}>TIERS</div>
 
         <div style={styles.profileTiersCard}>
-          {validGamemodes.map((mode, idx) => {
-            const kit = (player.kits || []).find(
-              (k) =>
-                k.kit_name === mode ||
-                k.gamemode === mode ||
-                k.name === mode ||
-                k.type === mode
-            );
-            const tierNameRaw = kit?.tier_name;
-            const peakTierNameRaw = kit?.peak_tier_name;
-            const displayTierName =
-              peakTierNameRaw && peakTierNameRaw !== tierNameRaw
-                ? `Peak ${peakTierNameRaw}`
-                : tierNameRaw || "N/A";
-            const isRetired = kit?.retired === true;
-            const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
-            const isRanked = !!tierNameRaw;
-            const tierColors = getTierColors(tierNameRaw);
-            const points = kit?.points ?? 0;
+          {(() => {
+            const rankedBadges = [];
+            const unrankedBadges = [];
 
-            return (
-              <div
-                key={idx}
-                style={styles.tierBadge}
-                onMouseEnter={() => setHoveredTierIndex(idx)}
-                onMouseLeave={() => setHoveredTierIndex(null)}
-              >
-                <div style={styles.iconCircleWrapper}>
-                  {isRanked ? (
-                    <>
-                      <img
-                        src={getGamemodeIcon(mode)}
-                        alt="tier icon"
-                        style={styles.tierIcon}
-                      />
+            validGamemodes.forEach((mode, idx) => {
+              const kit = (player.kits || []).find(
+                (k) =>
+                  k.kit_name === mode ||
+                  k.gamemode === mode ||
+                  k.name === mode ||
+                  k.type === mode
+              );
+
+              const tierNameRaw = kit?.tier_name;
+              const peakTierNameRaw = kit?.peak_tier_name;
+              const displayTierName =
+                peakTierNameRaw && peakTierNameRaw !== tierNameRaw
+                  ? `Peak ${peakTierNameRaw}`
+                  : tierNameRaw || "N/A";
+
+              const isRetired = kit?.retired === true;
+              const tierName = isRetired && tierNameRaw ? `R${tierNameRaw}` : tierNameRaw;
+              const isRanked = !!tierNameRaw;
+              const tierColors = getTierColors(tierNameRaw);
+              const points = kit?.points ?? 0;
+
+              const badge = (
+                <div
+                  key={idx}
+                  style={styles.tierBadge}
+                  onMouseEnter={() => setHoveredTierIndex(idx)}
+                  onMouseLeave={() => setHoveredTierIndex(null)}
+                >
+                  <div style={styles.iconCircleWrapper}>
+                    {isRanked ? (
+                      <>
+                        <img
+                          src={getGamemodeIcon(mode)}
+                          alt="tier icon"
+                          style={styles.tierIcon}
+                        />
+                        <div
+                          style={{
+                            ...styles.iconOutline,
+                            borderColor: tierColors.backgroundColor,
+                            borderStyle: "solid",
+                          }}
+                        />
+                      </>
+                    ) : (
                       <div
                         style={{
                           ...styles.iconOutline,
-                          borderColor: tierColors.backgroundColor,
-                          borderStyle: "solid",
+                          borderColor: "#354153",
+                          borderStyle: "dotted",
                         }}
                       />
-                    </>
-                  ) : (
-                    <div
-                      style={{
-                        ...styles.iconOutline,
-                        borderColor: "#354153",
-                        borderStyle: "dotted",
-                      }}
-                    />
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      ...styles.tierName,
+                      backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
+                      color: isRanked ? tierColors.color : "#354153",
+                    }}
+                    title={tierName || "Unranked"}
+                  >
+                    {isRanked ? tierName : "—"}
+                  </div>
+
+                  {hoveredTierIndex === idx && (
+                    <div style={styles.tierTooltip}>
+                      <div style={{ fontWeight: "1000", fontSize: 24 }}>{displayTierName || "N/A"}</div>
+                      <div>{points.toLocaleString()} points</div>
+                    </div>
                   )}
                 </div>
-                <div
-                  style={{
-                    ...styles.tierName,
-                    backgroundColor: isRanked ? tierColors.backgroundColor : "#212B39",
-                    color: isRanked ? tierColors.color : "#354153",
-                  }}
-                  title={tierName || "Unranked"}
-                >
-                  {isRanked ? tierName : "—"}
-                </div>
+              );
 
-                {hoveredTierIndex === idx && (
-                  <div style={styles.tierTooltip}>
-                    <div style={{ fontWeight: "1000", fontSize: 24 }}>{displayTierName || "N/A"}</div>
+              if (isRanked) {
+                rankedBadges.push(badge);
+              } else {
+                unrankedBadges.push(badge);
+              }
+            });
 
-                    <div>{points.toLocaleString()} points</div>
-                  </div>
-                )}
-              </div>
+            return (
+              <>
+                {rankedBadges}
+                {unrankedBadges}
+              </>
             );
-          })}
+          })()}
         </div>
       </div>
     </div>

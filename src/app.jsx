@@ -3,7 +3,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Leaderboard from "./components/leaderboard";
 import Lifesteal from "./pages/lifesteal";
-import TridentMace from "./pages/tridentmace";
+import Infuse from "./pages/infuse";
+import Glitch from "./pages/glitch";
+import Strength from "./pages/strength";
+import Bliss from "./pages/bliss";
 
 export default function App() {
   return (
@@ -17,7 +20,11 @@ export default function App() {
       {/* Actual leaderboard routes */}
       <Route path="/rankings/overall" element={<Leaderboard />} />
       <Route path="/rankings/lifesteal" element={<Lifesteal />} />
-      <Route path="/rankings/trident_mace" element={<TridentMace />} />
+      <Route path="/rankings/infuse" element={<Infuse />} />
+      <Route path="/rankings/bliss" element={<Bliss />} />
+      <Route path="/rankings/strength" element={<Strength />} />
+      <Route path="/rankings/glitch" element={<Glitch />} />
+
 
       {/* Catch all redirect */}
       <Route path="*" element={<Navigate to="/rankings/overall" replace />} />

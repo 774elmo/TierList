@@ -73,10 +73,10 @@ async function cachedFetch(url) {
   return data;
 }
 
-export default function Lifesteal() {
+export default function Bliss() {
   const { gamemode: rawGamemode } = useParams();
   const navigate = useNavigate();
-  const gamemode = rawGamemode || "lifesteal";
+  const gamemode = rawGamemode || "bliss";
 
   const [players, setPlayers] = useState([]);
   const [overallPlayers, setOverallPlayers] = useState([]);
@@ -95,7 +95,7 @@ export default function Lifesteal() {
 
   useEffect(() => {
     if (!validGamemodes.includes(gamemode)) {
-      navigate("/rankings/lifesteal", { replace: true });
+      navigate("/rankings/bliss", { replace: true });
     }
   }, [gamemode, navigate]);
 

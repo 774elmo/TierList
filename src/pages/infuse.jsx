@@ -4,6 +4,10 @@ import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
 import PageHeader from "../components/pageheader"; // <- import the header
 import SearchBar from "../components/searchbar";
+import DiscordIcon from "../assets/discord.svg";
+import SMPTiersImage from "../assets/smptiers.png";
+import { getGamemodeIcon } from "../components/gamemodeicons";
+
 
 import HT1 from "../assets/HT1.webp";
 import HT2 from "../assets/HT2.webp";
@@ -11,7 +15,7 @@ import HT3 from "../assets/HT3.webp";
 import caretDoubleUp from "../assets/caret-double-up.svg";
 import caretUp from "../assets/caret-up.svg";
 
-const validGamemodes = ["lifesteal", "trident_mace"];
+const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];;
 
 const topStripColors = [
   "#41361B",
@@ -69,19 +73,29 @@ async function cachedFetch(url) {
   return data;
 }
 
-export default function TridentMace() {
+export default function Infuse() {
   const { gamemode: rawGamemode } = useParams();
   const navigate = useNavigate();
-  const gamemode = rawGamemode || "trident_mace";
+  const gamemode = rawGamemode || "infuse";
 
   const [players, setPlayers] = useState([]);
   const [overallPlayers, setOverallPlayers] = useState([]);
   const [hoveredPlayer, setHoveredPlayer] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
+  const [hoveringTrigger, setHoveringTrigger] = useState(false);
+  const [hoveringPopup, setHoveringPopup] = useState(false);
+  const showPopup = hoveringTrigger || hoveringPopup;
+
+  const [lifestealLink] = useState("https://discord.gg/lifestealpvp");
+  const [strengthLink] = useState("https://discord.gg/W58sv4nrRS");
+  const [infuseLink] = useState("https://discord.gg/HF3m4b3HQF");
+  const [glitchLink] = useState("https://discord.gg/G2BJc8NfDd");
+  const [blissLink] = useState("https://discord.gg/WkTkYMUGsK");
+
   useEffect(() => {
     if (!validGamemodes.includes(gamemode)) {
-      navigate("/rankings/trident_mace", { replace: true });
+      navigate("/rankings/infuse", { replace: true });
     }
   }, [gamemode, navigate]);
 
@@ -143,6 +157,128 @@ export default function TridentMace() {
 
   return (
     <div style={styles.outerWrapper}>
+            <div style={styles.topCard}>
+        {/* Left: Absolute image */}
+        <img src={SMPTiersImage} alt="smptiers" style={styles.smptiersImage} />
+
+
+        {/* Center: Discord Wrapper */}
+        <div
+            style={{ position: "relative", display: "inline-block" }}
+            onMouseEnter={() => setHoveringTrigger(true)}
+            onMouseLeave={() => setHoveringTrigger(false)}
+        >
+            <div style={styles.discordWrapper}>
+            <img
+                src={DiscordIcon}
+                alt="Discord"
+                style={styles.discordIcon}
+                draggable={false}
+            />
+            <div style={styles.discordText}>
+                Discords{" "}
+                <img
+                src={caretUp}
+                alt="caret up"
+                style={{
+                    width: 15,
+                    height: 15,
+                    marginLeft: 6,
+                    verticalAlign: "middle",
+                    userSelect: "none",
+                    filter: "invert(100%)",
+                }}
+                draggable={false}
+                />
+            </div>
+            </div>
+
+            {showPopup && (
+            <div
+                style={styles.discordPopup}
+                onMouseEnter={() => setHoveringPopup(true)}
+                onMouseLeave={() => setHoveringPopup(false)}
+            >
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("lifesteal")}
+                    alt="Lifesteal"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={lifestealLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Lifesteal
+                </a>
+                </div>
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("infuse")}
+                    alt="Infuse"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={infuseLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Infuse
+                </a>
+                </div>
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("glitch")}
+                    alt="Glitch"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={glitchLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Glitch
+                </a>
+                </div>
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("bliss")}
+                    alt="Bliss"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={blissLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Bliss
+                </a>
+                </div>
+                <div style={styles.popupItem}>
+                <img
+                    src={getGamemodeIcon("strength")}
+                    alt="Strength"
+                    style={styles.popupIcon}
+                />
+                <a
+                    href={strengthLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.popupLink}
+                >
+                    Strength
+                </a>
+                </div>
+            </div>
+            )}
+        </div>
+        </div>
+
       {/* Reusable Header */}
       <PageHeader>
         <GamemodeTabs />
@@ -340,8 +476,8 @@ export default function TridentMace() {
 const styles = {
   outerWrapper: {
     backgroundColor: "#121821",
-    paddingTop: "4rem",
-    minHeight: "100vh",
+    paddingBottom: "6rem",
+    paddingTop: "2rem",
   },
   container: {
     maxWidth: 1200,
@@ -416,4 +552,78 @@ const styles = {
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
+  topCard: {
+  backgroundColor: "#121821",
+  border: "2px solid #1f2937",
+  borderRadius: 24,
+  paddingLeft: "2rem",
+  paddingRight: "2rem",
+  maxWidth: 1200,
+  minWidth: 1200,
+  display: "flex",
+  minHeight: 60,
+  justifyContent: "center",
+  alignItems: "center",
+  margin: "0 auto 2rem auto",
+  textAlign: "center",
+  position: "relative",
+},
+smptiersImage: {
+  width: 200,
+  height: 100,
+  userSelect: "none",
+  position: "absolute",
+  left: 0,
+},
+discordWrapper: {
+  display: "flex",
+  alignItems: "center",
+  cursor: "pointer",
+  justifyContent: "center",
+  position: "relative",
+},
+discordIcon: {
+  width: 30,
+  height: 30,
+  marginRight: 8,
+  userSelect: "none",
+},
+discordText: {
+  fontSize: 18,
+  fontWeight: "700",
+  color: "#e5e7eb",
+  userSelect: "none",
+  position: "relative",
+},
+discordPopup: {
+  position: "absolute",
+  top: "110%",
+  left: "50%",
+  transform: "translateX(-50%)",
+  backgroundColor: "#121821",
+  border: "2px solid #1f2937",
+  borderRadius: 24,
+  padding: "1rem 2rem",
+  whiteSpace: "nowrap",
+  zIndex: 1000,
+  userSelect: "none",
+},
+popupItem: {
+  display: "flex",
+  alignItems: "center",
+  marginBottom: 12,
+},
+popupIcon: {
+  width: 24,
+  height: 24,
+  marginRight: 12,
+  userSelect: "none",
+},
+popupLink: {
+  color: "#e5e7eb",
+  textDecoration: "none",
+  fontWeight: "700",
+  fontSize: 18,
+},
 };
+

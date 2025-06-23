@@ -1,10 +1,16 @@
 import lifestealIcon from "../assets/lifesteal.webp";
-import tridentMaceIcon from "../assets/trident_mace.webp";
+import infuseIcon from "../assets/infuse.webp";
+import glitchIcon from "../assets/glitch.webp";
+import strengthIcon from "../assets/strength.webp";
+import blissIcon from "../assets/bliss.webp";
 
 export function getGamemodeIcon(gamemode) {
   const icons = {
+    infuse: infuseIcon,
     lifesteal: lifestealIcon,
-    trident_mace: tridentMaceIcon,
+    glitch: glitchIcon,
+    strength: strengthIcon,
+    bliss: blissIcon,
   };
   return icons[gamemode] || "";
 }

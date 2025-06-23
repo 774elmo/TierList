@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getTabIcon } from "./tabicons";
 import overallIcon from "../assets/overall.webp";
 
-const gamemodes = ["lifesteal", "trident_mace"];
+const gamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
 export default function GamemodeTabs() {
   const navigate = useNavigate();
