@@ -7,6 +7,7 @@ import Infuse from "./pages/infuse";
 import Glitch from "./pages/glitch";
 import Strength from "./pages/strength";
 import Bliss from "./pages/bliss";
+import Home from "./pages/home"; // <-- import Home
 
 export default function App() {
   return (
@@ -25,6 +26,8 @@ export default function App() {
       <Route path="/rankings/strength" element={<Strength />} />
       <Route path="/rankings/glitch" element={<Glitch />} />
 
+      {/* Home page route */}
+      <Route path="/posts" element={<Home />} />
 
       {/* Catch all redirect */}
       <Route path="*" element={<Navigate to="/rankings/overall" replace />} />

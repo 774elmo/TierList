@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GamemodeTabs from "../components/gamemodetabs";
 import ProfileOverlay from "../components/profileoverlay";
@@ -6,6 +6,8 @@ import PageHeader from "../components/pageheader"; // <- import the header
 import SearchBar from "../components/searchbar";
 import DiscordIcon from "../assets/discord.svg";
 import SMPTiersImage from "../assets/smptiers.png";
+import HomeIcon from "../assets/home.svg";
+import RankingsIcon from "../assets/rankings.svg";
 import { getGamemodeIcon } from "../components/gamemodeicons";
 
 
@@ -83,9 +85,8 @@ export default function Strength() {
   const [hoveredPlayer, setHoveredPlayer] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
-  const [hoveringTrigger, setHoveringTrigger] = useState(false);
-  const [hoveringPopup, setHoveringPopup] = useState(false);
-  const showPopup = hoveringTrigger || hoveringPopup;
+  const [discordPopupOpen, setDiscordPopupOpen] = useState(false);
+  const discordRef = useRef(null);
 
   const [lifestealLink] = useState("https://discord.gg/lifestealpvp");
   const [strengthLink] = useState("https://discord.gg/W58sv4nrRS");
@@ -119,7 +120,24 @@ export default function Strength() {
     fetchData();
   }, [gamemode]);
 
-  // Return players with filtered non-retired kits per tier+HT/LT
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (discordRef.current && !discordRef.current.contains(event.target)) {
+        setDiscordPopupOpen(false);
+      }
+    }
+
+    if (discordPopupOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [discordPopupOpen]);
+
   function getPlayersForTierEnding(ending) {
     return {
       HT: players
@@ -129,10 +147,10 @@ export default function Strength() {
             (k) =>
               k.kit_name === gamemode &&
               k.tier_name === `HT${ending}` &&
-              !k.retired // exclude retired kits only
+              !k.retired
           ),
         }))
-        .filter(({ kits }) => kits.length > 0), // only players with active kits here
+        .filter(({ kits }) => kits.length > 0),
 
       LT: players
         .map((p) => ({
@@ -157,127 +175,145 @@ export default function Strength() {
 
   return (
     <div style={styles.outerWrapper}>
-            <div style={styles.topCard}>
-        {/* Left: Absolute image */}
+      {/* Top Card (with Rankings added between Home and Discord) */}
+      <div style={styles.topCard}>
         <img src={SMPTiersImage} alt="smptiers" style={styles.smptiersImage} />
+        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#ffffff",
+              fontWeight: 600,
+              fontSize: 18,
+              cursor: "pointer",
+              userSelect: "none",
+            }}
+            onClick={() => navigate("/posts")}
 
-
-        {/* Center: Discord Wrapper */}
-        <div
-            style={{ position: "relative", display: "inline-block" }}
-            onMouseEnter={() => setHoveringTrigger(true)}
-            onMouseLeave={() => setHoveringTrigger(false)}
-        >
-            <div style={styles.discordWrapper}>
+          >
             <img
-                src={DiscordIcon}
-                alt="Discord"
-                style={styles.discordIcon}
-                draggable={false}
+              src={HomeIcon}
+              alt="Home"
+              style={{
+                width: 30,
+                height: 30,
+                marginRight: 8,
+                filter: "invert(100%)",
+              }}
+              draggable={false}
             />
-            <div style={styles.discordText}>
-                Discords{" "}
-                <img
-                src={caretUp}
-                alt="caret up"
-                style={{
-                    width: 15,
-                    height: 15,
-                    marginLeft: 6,
-                    verticalAlign: "middle",
-                    userSelect: "none",
-                    filter: "invert(100%)",
-                }}
-                draggable={false}
-                />
-            </div>
-            </div>
+            Home
+          </div>
 
-            {showPopup && (
-            <div
-                style={styles.discordPopup}
-                onMouseEnter={() => setHoveringPopup(true)}
-                onMouseLeave={() => setHoveringPopup(false)}
-            >
-                <div style={styles.popupItem}>
-                <img
-                    src={getGamemodeIcon("lifesteal")}
-                    alt="Lifesteal"
-                    style={styles.popupIcon}
-                />
-                <a
-                    href={lifestealLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
-                >
-                    Lifesteal
-                </a>
-                </div>
-                <div style={styles.popupItem}>
-                <img
-                    src={getGamemodeIcon("infuse")}
-                    alt="Infuse"
-                    style={styles.popupIcon}
-                />
-                <a
-                    href={infuseLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
-                >
-                    Infuse
-                </a>
-                </div>
-                <div style={styles.popupItem}>
-                <img
-                    src={getGamemodeIcon("glitch")}
-                    alt="Glitch"
-                    style={styles.popupIcon}
-                />
-                <a
-                    href={glitchLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
-                >
-                    Glitch
-                </a>
-                </div>
-                <div style={styles.popupItem}>
-                <img
-                    src={getGamemodeIcon("bliss")}
-                    alt="Bliss"
-                    style={styles.popupIcon}
-                />
-                <a
-                    href={blissLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
-                >
-                    Bliss
-                </a>
-                </div>
-                <div style={styles.popupItem}>
-                <img
-                    src={getGamemodeIcon("strength")}
-                    alt="Strength"
-                    style={styles.popupIcon}
-                />
-                <a
-                    href={strengthLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.popupLink}
-                >
-                    Strength
-                </a>
-                </div>
-            </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#ffffff",
+              fontWeight: 600,
+              fontSize: 18,
+              cursor: "pointer",
+              userSelect: "none",
+            }}
+            onClick={() => navigate("/rankings/overall")}
+          >
+            <img
+              src={RankingsIcon}
+              alt="Rankings"
+              style={{
+                width: 30,
+                height: 30,
+                marginRight: 8,
+              }}
+              draggable={false}
+            />
+            Rankings
+          </div>
+
+          <div
+            ref={discordRef}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#ffffff",
+              fontWeight: 600,
+              fontSize: 18,
+              cursor: "pointer",
+              position: "relative",
+              zIndex: 1000,
+              userSelect: "none",
+            }}
+            onClick={() => setDiscordPopupOpen(!discordPopupOpen)}
+          >
+            <img src={DiscordIcon} alt="Discord" style={styles.discordIcon} draggable={false} />
+            Discords{" "}
+            <img
+              src={caretUp}
+              alt="caret up"
+              style={{
+                width: 15,
+                height: 15,
+                marginLeft: 6,
+                verticalAlign: "middle",
+                userSelect: "none",
+                filter: "invert(100%)",
+              }}
+              draggable={false}
+            />
+
+            {discordPopupOpen && (
+              <div
+                style={{
+                  ...styles.discordPopup,
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  minWidth: 160,
+                  backgroundColor: "#1E293B",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                  borderRadius: 8,
+                  padding: "12px 16px",
+                  marginTop: 4,
+                  zIndex: 1001,
+                }}
+              >
+                {[
+                  ["lifesteal", lifestealLink],
+                  ["infuse", infuseLink],
+                  ["glitch", glitchLink],
+                  ["bliss", blissLink],
+                  ["strength", strengthLink],
+                ].map(([mode, link]) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 8,
+                      cursor: "pointer",
+                    }}
+                    key={mode}
+                  >
+                    <img
+                      src={getGamemodeIcon(mode)}
+                      alt={mode}
+                      style={{ width: 24, height: 24, marginRight: 12 }}
+                    />
+                    <a
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "#fff", textDecoration: "none", fontWeight: 600 }}
+                    >
+                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                    </a>
+                  </div>
+                ))}
+              </div>
             )}
+          </div>
         </div>
-        </div>
+      </div>
 
       {/* Reusable Header */}
       <PageHeader>
@@ -472,6 +508,7 @@ export default function Strength() {
     </div>
   );
 }
+
 
 const styles = {
   outerWrapper: {

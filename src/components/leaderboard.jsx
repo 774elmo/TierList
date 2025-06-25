@@ -8,6 +8,9 @@ import SearchBar from "./searchbar";
 import DiscordIcon from "../assets/discord.svg";
 import CaretUpIcon from "../assets/caret-up.svg";
 import SMPTiersImage from "../assets/smptiers.png";
+import HomeIcon from "../assets/home.svg";
+import RankingsIcon from "../assets/rankings.svg";
+
 
 const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
@@ -75,11 +78,8 @@ export default function Leaderboard() {
   const navigate = useNavigate();
   const gamemode = rawGamemode || "overall";
 
-  // --- Updated states for Discord popup hover logic ---
-  const [hoveringTrigger, setHoveringTrigger] = useState(false);
-  const [hoveringPopup, setHoveringPopup] = useState(false);
-  // popup visible if either hover state is true
-  const showPopup = hoveringTrigger || hoveringPopup;
+  // State to track if popup is open (click toggle)
+  const [discordPopupOpen, setDiscordPopupOpen] = useState(false);
 
   const [lifestealLink] = useState("https://discord.gg/lifestealpvp");
   const [strengthLink] = useState("https://discord.gg/W58sv4nrRS");
@@ -95,6 +95,7 @@ export default function Leaderboard() {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const isMounted = useRef(true);
+  const discordRef = useRef(null); // ref for discord popup container
 
   function fetchLeaderboardData() {
     const baseUrl = "https://api.lifestealpvp.xyz/api/v1/data";
@@ -175,135 +176,169 @@ export default function Leaderboard() {
     return () => clearInterval(interval);
   }, [gamemode, navigate]);
 
-  if (loading) {
-    return null; // removed loading text and gif
-  }
+  // Close popup if clicking outside Discord popup
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        discordRef.current &&
+        !discordRef.current.contains(event.target)
+      ) {
+        setDiscordPopupOpen(false);
+      }
+    }
 
-  if (error) {
-    return <p style={{ ...styles.message, color: "#ef4444" }}>{error}</p>;
-  }
+    if (discordPopupOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [discordPopupOpen]);
+
+  if (loading) return null;
+  if (error) return <p style={{ ...styles.message, color: "#ef4444" }}>{error}</p>;
 
   return (
     <div style={styles.outerWrapper}>
-      {/* Discord Card */}
+      {/* Top Card with Home / Rankings / Discord */}
       <div style={styles.topCard}>
-        {/* Left: Absolute image */}
         <img src={SMPTiersImage} alt="smptiers" style={styles.smptiersImage} />
-
-        {/* Center: Discord Wrapper */}
-        <div
-          style={{ position: "relative", display: "inline-block" }}
-          onMouseEnter={() => setHoveringTrigger(true)}
-          onMouseLeave={() => setHoveringTrigger(false)}
-        >
-          <div style={styles.discordWrapper}>
+        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+          <div
+            onClick={() => navigate("/posts")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#ffffff",
+              fontWeight: 600,
+              fontSize: 18,
+              cursor: "pointer",
+              userSelect: "none",
+            }}
+          >
             <img
-              src={DiscordIcon}
-              alt="Discord"
-              style={styles.discordIcon}
+              src={HomeIcon}
+              alt="Home"
+              style={{
+                width: 30,
+                height: 30,
+                marginRight: 8,
+                filter: "invert(100%)",
+              }}
               draggable={false}
             />
-            <div style={styles.discordText}>
-              Discords{" "}
-              <img
-                src={CaretUpIcon}
-                alt="caret up"
-                style={{
-                  width: 15,
-                  height: 15,
-                  marginLeft: 6,
-                  verticalAlign: "middle",
-                  userSelect: "none",
-                  filter: "invert(100%)",
-                }}
-                draggable={false}
-              />
-            </div>
+            Home
           </div>
 
-          {showPopup && (
-            <div
-              style={styles.discordPopup}
-              onMouseEnter={() => setHoveringPopup(true)}
-              onMouseLeave={() => setHoveringPopup(false)}
-            >
-              <div style={styles.popupItem}>
-                <img
-                  src={getGamemodeIcon("lifesteal")}
-                  alt="Lifesteal"
-                  style={styles.popupIcon}
-                />
-                <a
-                  href={lifestealLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={styles.popupLink}
-                >
-                  Lifesteal
-                </a>
+          <div
+            onClick={() => navigate("/rankings/overall")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#ffffff",
+              fontWeight: 600,
+              fontSize: 18,
+              cursor: "pointer",
+              userSelect: "none",
+            }}
+          >
+            <img
+              src={RankingsIcon}
+              alt="Rankings"
+              style={{
+                width: 30,
+                height: 30,
+                marginRight: 8,
+              }}
+              draggable={false}
+            />
+            Rankings
+          </div>
+
+          <div
+            ref={discordRef}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#ffffff",
+              fontWeight: 600,
+              fontSize: 18,
+              cursor: "pointer",
+              position: "relative",
+              zIndex: 1000,
+              userSelect: "none",
+            }}
+            onClick={() => setDiscordPopupOpen(!discordPopupOpen)}
+          >
+            <img src={DiscordIcon} alt="Discord" style={styles.discordIcon} draggable={false} />
+            Discords{" "}
+            <img
+              src={CaretUpIcon}
+              alt="caret up"
+              style={{
+                width: 15,
+                height: 15,
+                marginLeft: 6,
+                verticalAlign: "middle",
+                userSelect: "none",
+                filter: "invert(100%)",
+              }}
+              draggable={false}
+            />
+
+            {discordPopupOpen && (
+              <div
+                style={{
+                  ...styles.discordPopup,
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  minWidth: 160,
+                  backgroundColor: "#1E293B",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                  borderRadius: 8,
+                  padding: "12px 16px",
+                  marginTop: 4,
+                  zIndex: 1001,
+                }}
+              >
+                {[ 
+                  ["lifesteal", lifestealLink],
+                  ["infuse", infuseLink],
+                  ["glitch", glitchLink],
+                  ["bliss", blissLink],
+                  ["strength", strengthLink],
+                ].map(([mode, link]) => (
+                  <div
+                    key={mode}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 8,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <img
+                      src={getGamemodeIcon(mode)}
+                      alt={mode}
+                      style={{ width: 24, height: 24, marginRight: 12 }}
+                    />
+                    <a
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "#fff", textDecoration: "none", fontWeight: 600 }}
+                    >
+                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                    </a>
+                  </div>
+                ))}
               </div>
-              <div style={styles.popupItem}>
-                <img
-                  src={getGamemodeIcon("infuse")}
-                  alt="Infuse"
-                  style={styles.popupIcon}
-                />
-                <a
-                  href={infuseLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={styles.popupLink}
-                >
-                  Infuse
-                </a>
-              </div>
-              <div style={styles.popupItem}>
-                <img
-                  src={getGamemodeIcon("glitch")}
-                  alt="Glitch"
-                  style={styles.popupIcon}
-                />
-                <a
-                  href={glitchLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={styles.popupLink}
-                >
-                  Glitch
-                </a>
-              </div>
-              <div style={styles.popupItem}>
-                <img
-                  src={getGamemodeIcon("bliss")}
-                  alt="Bliss"
-                  style={styles.popupIcon}
-                />
-                <a
-                  href={blissLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={styles.popupLink}
-                >
-                  Bliss
-                </a>
-              </div>
-              <div style={styles.popupItem}>
-                <img
-                  src={getGamemodeIcon("strength")}
-                  alt="Strength"
-                  style={styles.popupIcon}
-                />
-                <a
-                  href={strengthLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={styles.popupLink}
-                >
-                  Strength
-                </a>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -474,7 +509,6 @@ export default function Leaderboard() {
                     }
                   });
 
-                  // Return ranked badges first, then unranked, all in one flex container
                   return [...rankedBadges, ...unrankedBadges];
                 })()}
               </div>
