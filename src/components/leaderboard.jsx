@@ -10,7 +10,13 @@ import CaretUpIcon from "../assets/caret-up.svg";
 import SMPTiersImage from "../assets/smptiers.png";
 import HomeIcon from "../assets/home.svg";
 import RankingsIcon from "../assets/rankings.svg";
-
+import RookieIcon from "../assets/rookie.svg";
+import CombatNoviceIcon from "../assets/combat_novice.svg";
+import CombatCadetIcon from "../assets/combat_cadet.svg";
+import CombatSpecialistIcon from "../assets/combat_specialist.svg";
+import CombatAceIcon from "../assets/combat_ace.svg";
+import CombatMasterIcon from "../assets/combat_master.webp";
+import CombatGrandmasterIcon from "../assets/combat_grandmaster.webp";
 
 const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
@@ -72,6 +78,22 @@ function getShimmerUrl(position) {
 
 const STORAGE_KEY_PREFIX = "leaderboard_cache_";
 const CACHE_EXPIRATION = 10 * 60 * 1000;
+
+// === Title info array with icon imports ===
+const titleInfo = [
+  { title: "Rookie", icon: RookieIcon, minPoints: 0, maxPoints: 9 },
+  { title: "Combat Novice", icon: CombatNoviceIcon, minPoints: 10, maxPoints: 19 },
+  { title: "Combat Cadet", icon: CombatCadetIcon, minPoints: 20, maxPoints: 49 },
+  { title: "Combat Specialist", icon: CombatSpecialistIcon, minPoints: 50, maxPoints: 99 },
+  { title: "Combat Ace", icon: CombatAceIcon, minPoints: 100, maxPoints: 249 },
+  { title: "Combat Master", icon: CombatMasterIcon, minPoints: 250, maxPoints: 399 },
+  { title: "Combat Grandmaster", icon: CombatGrandmasterIcon, minPoints: 400, maxPoints: Infinity },
+];
+
+// Helper to get title info based on total points
+function getTitleInfo(points) {
+  return titleInfo.find(({ minPoints, maxPoints }) => points >= minPoints && points <= maxPoints);
+}
 
 export default function Leaderboard() {
   const { gamemode: rawGamemode } = useParams();
@@ -179,10 +201,7 @@ export default function Leaderboard() {
   // Close popup if clicking outside Discord popup
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        discordRef.current &&
-        !discordRef.current.contains(event.target)
-      ) {
+      if (discordRef.current && !discordRef.current.contains(event.target)) {
         setDiscordPopupOpen(false);
       }
     }
@@ -305,7 +324,7 @@ export default function Leaderboard() {
                   zIndex: 1001,
                 }}
               >
-                {[ 
+                {[
                   ["lifesteal", lifestealLink],
                   ["infuse", infuseLink],
                   ["glitch", glitchLink],
@@ -371,6 +390,14 @@ export default function Leaderboard() {
           const shimmerUrl = getShimmerUrl(player.position);
           const isHovered = hoveredIndex === index;
 
+          // Calculate player's total points — adjust property name as needed!
+          // You may also sum over kits if you want total points from all kits:
+          // const totalPoints = player.kits?.reduce((acc, kit) => acc + (kit.points || 0), 0) || 0;
+          const totalPoints = player.total_points || 0;
+
+          // Get player's title object for points
+          const titleObj = getTitleInfo(totalPoints);
+
           return (
             <div
               key={player.username}
@@ -400,9 +427,33 @@ export default function Leaderboard() {
                 />
               </div>
 
-              <div style={styles.usernameColRow} title={player.username}>
-                {player.username}
-              </div>
+                <div style={styles.usernameColRow} title={player.username}>
+                <div>{player.username}</div>
+                {titleObj && (
+                    <div
+                    style={{
+                        marginTop: 4,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        userSelect: "none",
+                        color: "#ccc",
+                        fontWeight: "600",
+                        fontSize: 20,
+                        // ensure it aligns left with username above:
+                        justifyContent: "flex-start",
+                    }}
+                    >
+                    <img
+                        src={titleObj.icon}
+                        alt={`${titleObj.title} icon`}
+                        style={{ width: 30, height: 30, objectFit: "contain" }}
+                        draggable={false}
+                    />
+                    <span>{titleObj.title}</span>
+                    </div>
+                )}
+                </div>
 
               <div style={styles.regionCol}>
                 <div
@@ -519,6 +570,7 @@ export default function Leaderboard() {
     );
   }
 }
+
 
 
 const styles = {

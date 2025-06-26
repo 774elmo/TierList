@@ -2,6 +2,77 @@ import React, { useState } from "react";
 import overallIcon from "../assets/overall.webp";
 import { getGamemodeIcon } from "./gamemodeicons";
 
+import rookieIcon from "../assets/rookie.svg";
+import combatNoviceIcon from "../assets/combat_novice.svg";
+import combatCadetIcon from "../assets/combat_cadet.svg";
+import combatSpecialistIcon from "../assets/combat_specialist.svg";
+import combatAceIcon from "../assets/combat_ace.svg";
+import combatMasterIcon from "../assets/combat_master.webp";
+import combatGrandmasterIcon from "../assets/combat_grandmaster.webp";
+
+// Title data with icon and description
+const titleInfo = [
+  {
+    title: "Rookie",
+    icon: rookieIcon,
+    description: "Starting rank for players with less than 10 points.",
+    minPoints: 0,
+    maxPoints: 9,
+  },
+  {
+    title: "Combat Novice",
+    icon: combatNoviceIcon,
+    description: "Obtained 10+ total points.",
+    minPoints: 10,
+    maxPoints: 19,
+  },
+  {
+    title: "Combat Cadet",
+    icon: combatCadetIcon,
+    description: "Obtained 20+ total points.",
+    minPoints: 20,
+    maxPoints: 49,
+  },
+  {
+    title: "Combat Specialist",
+    icon: combatSpecialistIcon,
+    description: "Obtained 50+ total points.",
+    minPoints: 50,
+    maxPoints: 99,
+  },
+  {
+    title: "Combat Ace",
+    icon: combatAceIcon,
+    description: "Obtained 100+ total points.",
+    minPoints: 100,
+    maxPoints: 249,
+  },
+  {
+    title: "Combat Master",
+    icon: combatMasterIcon,
+    description: "Obtained 250+ total points.",
+    minPoints: 250,
+    maxPoints: 399,
+  },
+  {
+    title: "Combat Grandmaster",
+    icon: combatGrandmasterIcon,
+    description: "Obtained 400+ total points.",
+    minPoints: 400,
+    maxPoints: Infinity,
+  },
+];
+
+// Get title info by points
+function getTitleInfo(points) {
+  for (const info of titleInfo) {
+    if (points >= info.minPoints && points <= info.maxPoints) {
+      return info;
+    }
+  }
+  return titleInfo[0]; // default to Rookie
+}
+
 const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
 function regionColor(region) {
@@ -58,8 +129,11 @@ function getShimmerUrl(position) {
 
 export default function ProfileOverlay({ player, onClose }) {
   const [hoveredTierIndex, setHoveredTierIndex] = useState(null);
+  const [hoverTitle, setHoverTitle] = useState(false);
 
   if (!player) return null;
+
+  const userTitle = getTitleInfo(player.total_points || 0);
 
   return (
     <div style={styles.profileOverlay}>
@@ -78,13 +152,35 @@ export default function ProfileOverlay({ player, onClose }) {
 
         <div style={styles.profileUsername}>{player.username}</div>
 
+        {/* Title with hover popup */}
+        <div
+          style={styles.titleWrapper}
+          onMouseEnter={() => setHoverTitle(true)}
+          onMouseLeave={() => setHoverTitle(false)}
+        >
+          <img
+            src={userTitle.icon}
+            alt={userTitle.title}
+            style={styles.titleIcon}
+            draggable={false}
+          />
+          <span style={styles.titleText}>{userTitle.title}</span>
+
+          {hoverTitle && (
+            <div style={styles.tierTooltip}>
+              <div style={{ fontWeight: "1000", fontSize: 24 }}>{userTitle.title}</div>
+              <div>{userTitle.description}</div>
+            </div>
+          )}
+        </div>
+
         <div
           style={{
             ...styles.region,
             margin: "1rem auto",
             width: "fit-content",
             fontSize: 20,
-            fontWeight: 700,
+            fontWeight: 800,
             backgroundColor: regionColor(player.region),
             color: regionTextColor(player.region),
           }}
@@ -274,20 +370,42 @@ const styles = {
     margin: 0,
   },
   profileUsername: {
-    fontSize: 25,
+    fontSize: 30,
     fontWeight: "800",
     marginTop: 8,
     color: "#ffffff",
   },
+  titleWrapper: {
+    marginTop: 6,
+    marginBottom: 8,
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    position: "relative",
+    cursor: "default",
+  },
+  titleIcon: {
+    width: 30,
+    height: 30,
+    userSelect: "none",
+    marginTop: 12,
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#e5e7eb",
+    userSelect: "none",
+    marginTop: 12,
+  },
   region: {
-    fontSize: 25,
+    fontSize: 30,
     padding: "6px 8px",
     borderRadius: 12,
-    minWidth: 35,
+    minWidth: 45,
     textAlign: "center",
     textTransform: "uppercase",
     userSelect: "none",
-    fontWeight: "800",
+    fontWeight: "700",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -442,3 +560,4 @@ const styles = {
     userSelect: "none",
   },
 };
+
