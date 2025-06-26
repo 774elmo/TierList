@@ -533,7 +533,7 @@ const styles = {
     textAlign: "left",
   },
   overallPoints: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: 600,
     color: "#9ca3af",
     textAlign: "left",
