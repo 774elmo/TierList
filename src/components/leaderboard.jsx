@@ -16,7 +16,11 @@ import CombatCadetIcon from "../assets/combat_cadet.svg";
 import CombatSpecialistIcon from "../assets/combat_specialist.svg";
 import CombatAceIcon from "../assets/combat_ace.svg";
 import CombatMasterIcon from "../assets/combat_master.webp";
-import CombatGrandmasterIcon from "../assets/combat_grandmaster.webp";
+import CombatGodIcon from "../assets/combat_god.webp";
+import shimmer1 from "../assets/1-shimmer.svg";
+import shimmer2 from "../assets/2-shimmer.svg";
+import shimmer3 from "../assets/3-shimmer.svg";
+import shimmerOther from "../assets/other.svg";
 
 const validGamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 
@@ -66,11 +70,12 @@ function getTierColors(tierName) {
 }
 
 const shimmerUrls = {
-  1: "https://mctiers.com/placements/1-shimmer.svg",
-  2: "https://mctiers.com/placements/2-shimmer.svg",
-  3: "https://mctiers.com/placements/3-shimmer.svg",
-  other: "https://mctiers.com/placements/other.svg",
+  1: shimmer1,
+  2: shimmer2,
+  3: shimmer3,
+  other: shimmerOther,
 };
+
 
 function getShimmerUrl(position) {
   return shimmerUrls[position] || shimmerUrls.other;
@@ -87,7 +92,7 @@ const titleInfo = [
   { title: "Combat Specialist", icon: CombatSpecialistIcon, minPoints: 50, maxPoints: 99 },
   { title: "Combat Ace", icon: CombatAceIcon, minPoints: 100, maxPoints: 249 },
   { title: "Combat Master", icon: CombatMasterIcon, minPoints: 250, maxPoints: 399 },
-  { title: "Combat Grandmaster", icon: CombatGrandmasterIcon, minPoints: 400, maxPoints: Infinity },
+  { title: "Combat God", icon: CombatGodIcon, minPoints: 400, maxPoints: Infinity },
 ];
 
 // Helper to get title info based on total points
@@ -418,7 +423,7 @@ export default function Leaderboard() {
             >
               <div style={styles.ribbon}>
                 <img src={shimmerUrl} alt="shimmer" style={styles.shimmerImage} draggable={false} />
-                <span style={styles.positionNumber}>{player.position}</span>
+                <span style={styles.positionNumber}>{player.position}.</span>
                 <img
                   src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
                   alt={player.username}
@@ -437,7 +442,7 @@ export default function Leaderboard() {
                         alignItems: "center",
                         gap: 6,
                         userSelect: "none",
-                        color: "#ccc",
+                        color: "#54627D",
                         fontWeight: "600",
                         fontSize: 20,
                         // ensure it aligns left with username above:
@@ -525,7 +530,7 @@ export default function Leaderboard() {
                               style={{
                                 ...styles.iconOutline,
                                 borderColor: "#354153",
-                                borderStyle: "dotted",
+                                borderStyle: "dashed",
                               }}
                             />
                           )}
@@ -539,7 +544,7 @@ export default function Leaderboard() {
                           }}
                           title={tierName || "Unranked"}
                         >
-                          {isRanked ? tierName : "—"}
+                          {isRanked ? tierName : "-"}
                         </div>
 
                         {showTooltip && (
@@ -672,7 +677,7 @@ const styles = {
     left: 0,
     width: 200,
     height: 70,
-    borderRadius: 8,
+    borderRadius: 15,
     objectFit: "cover",
     pointerEvents: "none",
     userSelect: "none",
@@ -680,7 +685,7 @@ const styles = {
   },
   positionNumber: {
     position: "absolute",
-    top: "50%",
+   top: "50%",
     left: 14,
     transform: "translateY(-50%)",
     fontSize: 42,
@@ -688,8 +693,8 @@ const styles = {
     fontStyle: "italic",
     color: "#ffffff",
     zIndex: 2,
-    textShadow: "0 0 4px #000, 1px 1px 2px #000",
     userSelect: "none",
+    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
   },
   skinImageInRibbon: {
     position: "absolute",
@@ -704,7 +709,8 @@ const styles = {
   },
   usernameColRow: {
     width: 400,
-    fontWeight: 800,
+    fontWeight: 600,
+    color: "#CAD5E2",
     fontSize: 25,
     whiteSpace: "nowrap",
     overflow: "hidden",
@@ -713,8 +719,8 @@ const styles = {
   region: {
     fontSize: 20,
     padding: "6px 12px",
-    borderRadius: 12,
-    minWidth: 35,
+    borderRadius: 15,
+    minWidth: 30,
     textAlign: "center",
     textTransform: "uppercase",
     userSelect: "none",

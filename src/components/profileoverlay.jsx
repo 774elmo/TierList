@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import overallIcon from "../assets/overall.webp";
+import overallIcon from "../assets/overall.svg";
 import { getGamemodeIcon } from "./gamemodeicons";
 
 import rookieIcon from "../assets/rookie.svg";
@@ -8,7 +8,11 @@ import combatCadetIcon from "../assets/combat_cadet.svg";
 import combatSpecialistIcon from "../assets/combat_specialist.svg";
 import combatAceIcon from "../assets/combat_ace.svg";
 import combatMasterIcon from "../assets/combat_master.webp";
-import combatGrandmasterIcon from "../assets/combat_grandmaster.webp";
+import combatGodIcon from "../assets/combat_god.webp";
+import shimmer1 from "../assets/1-shimmer.svg";
+import shimmer2 from "../assets/2-shimmer.svg";
+import shimmer3 from "../assets/3-shimmer.svg";
+import shimmerOther from "../assets/other.svg";
 
 // Title data with icon and description
 const titleInfo = [
@@ -18,6 +22,8 @@ const titleInfo = [
     description: "Starting rank for players with less than 10 points.",
     minPoints: 0,
     maxPoints: 9,
+    backgroundColor: "#2C323E",
+    color: "#D1D5DB",
   },
   {
     title: "Combat Novice",
@@ -25,6 +31,8 @@ const titleInfo = [
     description: "Obtained 10+ total points.",
     minPoints: 10,
     maxPoints: 19,
+    backgroundColor: "#2F374D",
+    color: "#C4B5F7",
   },
   {
     title: "Combat Cadet",
@@ -32,6 +40,8 @@ const titleInfo = [
     description: "Obtained 20+ total points.",
     minPoints: 20,
     maxPoints: 49,
+    backgroundColor: "#282F4D",
+    color: "#ABA8FD",
   },
   {
     title: "Combat Specialist",
@@ -39,6 +49,8 @@ const titleInfo = [
     description: "Obtained 50+ total points.",
     minPoints: 50,
     maxPoints: 99,
+    backgroundColor: "#463863",
+    color: "#D8A8D7",
   },
   {
     title: "Combat Ace",
@@ -46,6 +58,8 @@ const titleInfo = [
     description: "Obtained 100+ total points.",
     minPoints: 100,
     maxPoints: 249,
+    backgroundColor: "#562333",
+    color: "#FDA4AB",
   },
   {
     title: "Combat Master",
@@ -53,13 +67,17 @@ const titleInfo = [
     description: "Obtained 250+ total points.",
     minPoints: 250,
     maxPoints: 399,
+    backgroundColor: "#414029",
+    color: "#FDC732",
   },
   {
-    title: "Combat Grandmaster",
-    icon: combatGrandmasterIcon,
+    title: "Combat God",
+    icon: combatGodIcon,
     description: "Obtained 400+ total points.",
     minPoints: 400,
     maxPoints: Infinity,
+    backgroundColor: "#414029",
+    color: "#FDC732",
   },
 ];
 
@@ -119,10 +137,10 @@ function getTierColors(tierName) {
 
 function getShimmerUrl(position) {
   const shimmerUrls = {
-    1: "https://mctiers.com/placements/1-shimmer.svg",
-    2: "https://mctiers.com/placements/2-shimmer.svg",
-    3: "https://mctiers.com/placements/3-shimmer.svg",
-    other: "https://mctiers.com/placements/other.svg",
+    1: shimmer1,
+    2: shimmer2,
+    3: shimmer3,
+    other: shimmerOther,
   };
   return shimmerUrls[position] || shimmerUrls.other;
 }
@@ -152,41 +170,71 @@ export default function ProfileOverlay({ player, onClose }) {
 
         <div style={styles.profileUsername}>{player.username}</div>
 
-        {/* Title with hover popup */}
-        <div
-          style={styles.titleWrapper}
-          onMouseEnter={() => setHoverTitle(true)}
-          onMouseLeave={() => setHoverTitle(false)}
-        >
-          <img
-            src={userTitle.icon}
-            alt={userTitle.title}
-            style={styles.titleIcon}
-            draggable={false}
-          />
-          <span style={styles.titleText}>{userTitle.title}</span>
+<div
+  style={{
+    ...styles.titleWrapper,
+    backgroundColor: userTitle.backgroundColor,
+    color: userTitle.color,
+    padding: "6px 12px",
+    borderRadius: 20,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    lineHeight: 1,
+  }}
+  onMouseEnter={() => setHoverTitle(true)}
+  onMouseLeave={() => setHoverTitle(false)}
+>
+  <img
+    src={userTitle.icon}
+    alt={userTitle.title}
+    style={{
+      width: 24,
+      height: 24,
+      objectFit: "contain",
+      display: "block",
+    }}
+    draggable={false}
+  />
+  <span
+    style={{
+      fontSize: 18,
+      fontWeight: 700,
+      color: userTitle.color,
+      userSelect: "none",
+      position: "relative",
+      top: "1px", // tweak this to align vertically
+    }}
+  >
+    {userTitle.title}
+  </span>
 
-          {hoverTitle && (
-            <div style={styles.tierTooltip}>
-              <div style={{ fontWeight: "1000", fontSize: 24 }}>{userTitle.title}</div>
-              <div>{userTitle.description}</div>
+  {hoverTitle && (
+    <div style={styles.tierTooltip}>
+      <div style={{ fontWeight: "600", fontSize: 24}}>{userTitle.title}</div>
+      <div>{userTitle.description}</div>
+    </div>
+  )}
+</div>
+
+
+            <div
+            style={{
+                marginTop: 10,
+                marginBottom: 16,
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#222A38",
+            }}
+            >
+            {player.region === "AS"
+                ? "Asia"
+                : player.region === "NA"
+                ? "North America"
+                : player.region === "EU"
+                ? "Europe"
+                : "N/A"}
             </div>
-          )}
-        </div>
-
-        <div
-          style={{
-            ...styles.region,
-            margin: "1rem auto",
-            width: "fit-content",
-            fontSize: 20,
-            fontWeight: 800,
-            backgroundColor: regionColor(player.region),
-            color: regionTextColor(player.region),
-          }}
-        >
-          {player.region || "N/A"}
-        </div>
 
         <div style={styles.sectionHeader}>POSITION</div>
 
@@ -198,7 +246,7 @@ export default function ProfileOverlay({ player, onClose }) {
               style={styles.shimmerImageProfile}
               draggable={false}
             />
-            <span style={styles.positionNumberProfile}>{player.position}</span>
+            <span style={styles.positionNumberProfile}>{player.position}.</span>
           </div>
           <div style={styles.overallInfo}>
             <img src={overallIcon} alt="overall" style={styles.overallIcon} />
@@ -270,7 +318,7 @@ export default function ProfileOverlay({ player, onClose }) {
                         style={{
                           ...styles.iconOutline,
                           borderColor: "#354153",
-                          borderStyle: "dotted",
+                          borderStyle: "dashed",
                         }}
                       />
                     )}
@@ -283,7 +331,7 @@ export default function ProfileOverlay({ player, onClose }) {
                     }}
                     title={tierName || "Unranked"}
                   >
-                    {isRanked ? tierName : "—"}
+                    {isRanked ? tierName : "-"}
                   </div>
 
                   {hoveredTierIndex === idx && (
@@ -335,7 +383,6 @@ const styles = {
     width: "90%",
     maxWidth: 600,
     color: "#e5e7eb",
-    border: "2px solid #1f2937",
     textAlign: "center",
     position: "relative",
   },
@@ -371,9 +418,9 @@ const styles = {
   },
   profileUsername: {
     fontSize: 30,
-    fontWeight: "800",
-    marginTop: 8,
-    color: "#ffffff",
+    fontWeight: "700",
+    marginBottom: 10,
+    color: "#CAD5E2",
   },
   titleWrapper: {
     marginTop: 6,
@@ -400,8 +447,8 @@ const styles = {
   region: {
     fontSize: 30,
     padding: "6px 8px",
-    borderRadius: 12,
-    minWidth: 45,
+    borderRadius: 15,
+    minWidth: 40,
     textAlign: "center",
     textTransform: "uppercase",
     userSelect: "none",
@@ -425,11 +472,11 @@ const styles = {
     marginBottom: "2rem",
     backgroundColor: "#18202C",
     borderRadius: 12,
-    border: "2px solid #1f2937",
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    gap: 24,
+    border: "2px solid #1f2937",
+    gap: 0,
   },
   ribbonProfile: {
     position: "relative",
@@ -438,22 +485,22 @@ const styles = {
     justifyContent: "flex-start",
     width: 150,
     height: 70,
-    borderRadius: 8,
+    borderRadius: 12,
     overflow: "hidden",
     userSelect: "none",
     backgroundColor: "transparent",
+    
   },
   shimmerImageProfile: {
     position: "absolute",
-    top: 0,
-    left: 0,
     width: 150,
     height: 70,
-    borderRadius: 8,
     objectFit: "cover",
     pointerEvents: "none",
+    borderRadius: 12,
     userSelect: "none",
     zIndex: 0,
+    boxSizing: "border-box",
   },
   positionNumberProfile: {
     position: "absolute",
@@ -465,7 +512,7 @@ const styles = {
     fontStyle: "italic",
     color: "#ffffff",
     zIndex: 2,
-    textShadow: "0 0 4px #000, 1px 1px 2px #000",
+    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
     userSelect: "none",
   },
   overallInfo: {
@@ -478,14 +525,15 @@ const styles = {
     width: 45,
     height: 45,
     borderRadius: 12,
+    marginLeft: 10, 
   },
   overallText: {
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: 700,
     textAlign: "left",
   },
   overallPoints: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: 600,
     color: "#9ca3af",
     textAlign: "left",
@@ -496,8 +544,8 @@ const styles = {
     border: "2px solid #1f2937",
     padding: "1rem 2rem",
     display: "flex",
-    justifyContent: "center",
-    gap: 24,
+    justifyContent: "flex-start",
+    gap: 15,
     flexWrap: "wrap",
   },
   tierBadge: {
@@ -560,4 +608,5 @@ const styles = {
     userSelect: "none",
   },
 };
+
 

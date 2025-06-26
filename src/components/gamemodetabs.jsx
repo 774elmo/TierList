@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getTabIcon } from "./tabicons";
-import overallIcon from "../assets/overall.webp";
+import overallIcon from "../assets/overall.svg";
 
 const gamemodes = ["lifesteal", "infuse", "glitch", "strength", "bliss"];
 

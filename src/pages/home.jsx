@@ -324,7 +324,6 @@ export default function Home() {
   );
 }
 
-// Styles (add more or adjust as you want)
 const styles = {
   outerWrapper: {
     backgroundColor: "#121821",
@@ -332,21 +331,21 @@ const styles = {
     paddingTop: "2rem",
   },
   topCard: {
-  backgroundColor: "#121821",
-  border: "2px solid #1f2937",
-  borderRadius: 24,
-  paddingLeft: "2rem",
-  paddingRight: "2rem",
-  maxWidth: 1200,
-  minWidth: 1200,
-  display: "flex",
-  minHeight: 60,
-  justifyContent: "center",
-  alignItems: "center",
-  margin: "0 auto 2rem auto",
-  textAlign: "center",
-  position: "relative",
-},
+    backgroundColor: "#121821",
+    border: "2px solid #1f2937",
+    borderRadius: 24,
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+    maxWidth: 1600,   // updated from 1200
+    minWidth: 1600,   // updated from 1200
+    display: "flex",
+    minHeight: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: "0 auto 2rem auto",
+    textAlign: "center",
+    position: "relative",
+  },
   smptiersImage: {
     width: 200,
     height: 100,
@@ -378,8 +377,8 @@ const styles = {
     border: "2px solid #1f2937",
     borderRadius: 24,
     padding: 24,
-    maxWidth: 1200,
-    minWidth: 1200,
+    maxWidth: 1600,  // updated from 1200
+    minWidth: 1600,  // updated from 1200
     margin: "0 auto",
     color: "#fff",
   },
