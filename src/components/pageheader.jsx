@@ -11,8 +11,8 @@ export default function PageHeader({ children }) {
 
 const styles = {
   wrapper: {
-    maxWidth: 1200,
-    minWidth: 1200,       // fixed width to match container
+    maxWidth: 1600,
+    minWidth: 1600,       // fixed width to match container
     margin: "0 auto",
     padding: "0 2rem",
     display: "flex",

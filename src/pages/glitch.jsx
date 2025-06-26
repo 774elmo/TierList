@@ -8,6 +8,7 @@ import DiscordIcon from "../assets/discord.svg";
 import SMPTiersImage from "../assets/smptiers.png";
 import HomeIcon from "../assets/home.svg";
 import RankingsIcon from "../assets/rankings.svg";
+import loadingGif from "../assets/loading.gif";
 import { getGamemodeIcon } from "../components/gamemodeicons";
 
 
@@ -94,6 +95,8 @@ export default function Glitch() {
   const [glitchLink] = useState("https://discord.gg/G2BJc8NfDd");
   const [blissLink] = useState("https://discord.gg/WkTkYMUGsK");
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     if (!validGamemodes.includes(gamemode)) {
       navigate("/rankings/glitch", { replace: true });
@@ -102,9 +105,12 @@ export default function Glitch() {
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
         const gamemodeUrl = `https://api.lifestealpvp.xyz/api/v1/data?gamemode=${gamemode}`;
         const overallUrl = "https://api.lifestealpvp.xyz/api/v1/data";
+
+        const startTime = Date.now();
 
         const [dataGamemode, dataOverall] = await Promise.all([
           cachedFetch(gamemodeUrl),
@@ -113,9 +119,17 @@ export default function Glitch() {
 
         setPlayers(dataGamemode);
         setOverallPlayers(dataOverall);
+
+        const elapsed = Date.now() - startTime;
+        const delay = 2000 - elapsed;
+
+        if (delay > 0) {
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+      setLoading(false);
     }
     fetchData();
   }, [gamemode]);
@@ -190,7 +204,6 @@ export default function Glitch() {
               userSelect: "none",
             }}
             onClick={() => navigate("/posts")}
-
           >
             <img
               src={HomeIcon}
@@ -246,7 +259,12 @@ export default function Glitch() {
             }}
             onClick={() => setDiscordPopupOpen(!discordPopupOpen)}
           >
-            <img src={DiscordIcon} alt="Discord" style={styles.discordIcon} draggable={false} />
+            <img
+              src={DiscordIcon}
+              alt="Discord"
+              style={styles.discordIcon}
+              draggable={false}
+            />
             Discords{" "}
             <img
               src={caretUp}
@@ -327,6 +345,45 @@ export default function Glitch() {
           const tier = tierData[num - 1];
           const { HT, LT } = getPlayersForTierEnding(num);
 
+          // Total player entries for this strip
+          const totalEntries = HT.length + LT.length;
+
+          // Helper to determine border radius for player cards
+          // We consider the current strip index idx, and total strips count (5)
+          // and position of the card within the HT or LT arrays.
+          function getBorderRadius(isHT, index, isLastEntry) {
+            // Conditions:
+            // 1) First card below header: no top radius
+            // 2) If only one card in the strip, round bottom corners
+            // 3) If last strip (idx == 4), last card always rounded bottom corners
+            // 4) If strip is between two strips (idx 1-3), no rounded corners top or bottom for cards
+
+            // No top radius if first card (index === 0)
+            // Otherwise 0 top radius.
+
+            // Determine if last strip:
+            const isLastStrip = idx === 4;
+
+            // Single entry condition
+            const isOnlyEntry = totalEntries === 1;
+
+            const radiusTop = "0px"; // Always 0 top radius as per user request
+            let radiusBottom = "0px";
+
+            if (isOnlyEntry) {
+              radiusBottom = "8px"; // Round bottom if only one entry in strip
+            } else if (isLastStrip && isLastEntry) {
+              radiusBottom = "8px"; // Last card in last strip: round bottom corners
+            }
+
+            return {
+              borderTopLeftRadius: radiusTop,
+              borderTopRightRadius: radiusTop,
+              borderBottomLeftRadius: radiusBottom,
+              borderBottomRightRadius: radiusBottom,
+            };
+          }
+
           return (
             <div key={num} style={styles.strip}>
               <div
@@ -338,6 +395,7 @@ export default function Glitch() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  userSelect: "none",
                 }}
               >
                 {tier.img && (
@@ -357,146 +415,179 @@ export default function Glitch() {
                     color: tier.color,
                     fontWeight: "700",
                     fontSize: 24,
-                    userSelect: "none",
                   }}
                 >
                   {tier.label}
                 </span>
               </div>
 
-              {HT.map(({ player }, i) => {
-                const isLastHT = HT.length > 0 && LT.length === 0 && i === HT.length - 1;
-                const brightColor = getBrightRegionColor(player.region);
-                const darkColor = getDarkRegionColor(player.region);
-                const isHovered = hoveredPlayer === player.uuid;
-
-                return (
-                  <div
-                    key={player.uuid}
+              {/* Loading GIF below the tier header with 30px gap */}
+              {loading && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: -30,
+                  }}
+                >
+                  <img
+                    src={loadingGif}
+                    alt="loading"
                     style={{
-                      ...styles.tierEntry,
-                      backgroundColor: "#263244",
-                      borderBottomLeftRadius: isLastHT ? 8 : 0,
-                      borderBottomRightRadius: isLastHT ? 8 : 0,
-                      cursor: "pointer",
+                      width: 120,
+                      height: 120,
+                      objectFit: "contain",
+                      filter: "invert(100%)",
+                      userSelect: "none",
                     }}
-                    onMouseEnter={() => setHoveredPlayer(player.uuid)}
-                    onMouseLeave={() => setHoveredPlayer(null)}
-                    onClick={() => handlePlayerClick(player.uuid)}
-                  >
+                    draggable={false}
+                  />
+                </div>
+              )}
+
+                {/* Render HT players */}
+                {!loading &&
+                HT.map(({ player }, i) => {
+                    const isLastEntry = LT.length === 0 && i === HT.length - 1;
+                    const brightColor = getBrightRegionColor(player.region);
+                    const darkColor = getDarkRegionColor(player.region);
+                    const isHovered = hoveredPlayer === player.uuid;
+
+                    return (
                     <div
-                      style={{
-                        ...styles.regionStrip,
-                        backgroundColor: isHovered ? darkColor : brightColor,
-                        width: isHovered ? 30 : 5,
-                        transition: "width 0.3s ease, background-color 0.3s ease",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        paddingLeft: 0,
-                        color: brightColor,
-                        fontWeight: "700",
-                        fontSize: 14,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        borderRadius: 2,
-                        marginRight: 6,
-                        userSelect: "none",
-                      }}
+                        key={player.uuid}
+                        style={{
+                        ...styles.tierEntry,
+                        backgroundColor: "#263244",
+                        cursor: "pointer",
+                        ...getBorderRadius(true, i, isLastEntry),
+                        borderBottomLeftRadius: isHovered ? 8 : getBorderRadius(true, i, isLastEntry).borderBottomLeftRadius,
+                        borderBottomRightRadius: isHovered ? 8 : getBorderRadius(true, i, isLastEntry).borderBottomRightRadius,
+                        borderTopLeftRadius: isHovered ? 0 : getBorderRadius(true, i, isLastEntry).borderTopLeftRadius,
+                        borderTopRightRadius: isHovered ? 0 : getBorderRadius(true, i, isLastEntry).borderTopRightRadius,
+                        }}
+                        onMouseEnter={() => setHoveredPlayer(player.uuid)}
+                        onMouseLeave={() => setHoveredPlayer(null)}
+                        onClick={() => handlePlayerClick(player.uuid)}
                     >
-                      {isHovered && player.region}
+                        <div
+                        style={{
+                            ...styles.regionStrip,
+                            backgroundColor: isHovered ? darkColor : brightColor,
+                            width: isHovered ? 30 : 5,
+                            transition: "width 0.3s ease, background-color 0.3s ease",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingLeft: 0,
+                            color: brightColor,
+                            fontWeight: "700",
+                            fontSize: 14,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            borderRadius: 2,
+                            marginRight: 6,
+                            userSelect: "none",
+                        }}
+                        >
+                        {isHovered && player.region}
+                        </div>
+
+                        <div style={styles.skinFrame}>
+                        <img
+                            src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+                            alt={player.username}
+                            style={styles.skin}
+                        />
+                        </div>
+                        <span style={styles.username}>{player.username}</span>
+                        <img
+                        src={caretDoubleUp}
+                        alt="HT icon"
+                        style={{
+                            width: 25,
+                            height: 20,
+                            marginLeft: 6,
+                            filter:
+                            "invert(38%) sepia(51%) saturate(344%) hue-rotate(190deg) brightness(90%) contrast(85%)",
+                        }}
+                        />
                     </div>
+                    );
+                })}
 
-                    <div style={styles.skinFrame}>
-                      <img
-                        src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-                        alt={player.username}
-                        style={styles.skin}
-                      />
-                    </div>
-                    <span style={styles.username}>{player.username}</span>
-                    <img
-                      src={caretDoubleUp}
-                      alt="HT icon"
-                      style={{
-                        width: 25,
-                        height: 20,
-                        marginLeft: 6,
-                        filter:
-                          "invert(38%) sepia(51%) saturate(344%) hue-rotate(190deg) brightness(90%) contrast(85%)",
-                      }}
-                    />
-                  </div>
-                );
-              })}
+                {/* Render LT players */}
+                {!loading &&
+                LT.map(({ player }, i) => {
+                    const isLastEntry = i === LT.length - 1;
+                    const brightColor = getBrightRegionColor(player.region);
+                    const darkColor = getDarkRegionColor(player.region);
+                    const isHovered = hoveredPlayer === player.uuid;
 
-              {LT.map(({ player }, i) => {
-                const isLastLT = i === LT.length - 1;
-                const brightColor = getBrightRegionColor(player.region);
-                const darkColor = getDarkRegionColor(player.region);
-                const isHovered = hoveredPlayer === player.uuid;
-
-                return (
-                  <div
-                    key={player.uuid}
-                    style={{
-                      ...styles.tierEntry,
-                      backgroundColor: "#161E2A",
-                      borderBottomLeftRadius: isLastLT ? 8 : 0,
-                      borderBottomRightRadius: isLastLT ? 8 : 0,
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={() => setHoveredPlayer(player.uuid)}
-                    onMouseLeave={() => setHoveredPlayer(null)}
-                    onClick={() => handlePlayerClick(player.uuid)}
-                  >
+                    return (
                     <div
-                      style={{
-                        ...styles.regionStrip,
-                        backgroundColor: isHovered ? darkColor : brightColor,
-                        width: isHovered ? 30 : 5,
-                        transition: "width 0.3s ease, background-color 0.3s ease",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        paddingLeft: 0,
-                        color: brightColor,
-                        fontWeight: "700",
-                        fontSize: 14,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        borderRadius: 2,
-                        marginRight: 6,
-                        userSelect: "none",
-                      }}
+                        key={player.uuid}
+                        style={{
+                        ...styles.tierEntry,
+                        backgroundColor: "#161E2A",
+                        cursor: "pointer",
+                        ...getBorderRadius(false, i, isLastEntry),
+                        borderBottomLeftRadius: isHovered ? 8 : getBorderRadius(false, i, isLastEntry).borderBottomLeftRadius,
+                        borderBottomRightRadius: isHovered ? 8 : getBorderRadius(false, i, isLastEntry).borderBottomRightRadius,
+                        borderTopLeftRadius: isHovered ? 0 : getBorderRadius(false, i, isLastEntry).borderTopLeftRadius,
+                        borderTopRightRadius: isHovered ? 0 : getBorderRadius(false, i, isLastEntry).borderTopRightRadius,
+                        }}
+                        onMouseEnter={() => setHoveredPlayer(player.uuid)}
+                        onMouseLeave={() => setHoveredPlayer(null)}
+                        onClick={() => handlePlayerClick(player.uuid)}
                     >
-                      {isHovered && player.region}
-                    </div>
+                        <div
+                        style={{
+                            ...styles.regionStrip,
+                            backgroundColor: isHovered ? darkColor : brightColor,
+                            width: isHovered ? 30 : 5,
+                            transition: "width 0.3s ease, background-color 0.3s ease",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingLeft: 0,
+                            color: brightColor,
+                            fontWeight: "700",
+                            fontSize: 14,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            borderRadius: 2,
+                            marginRight: 6,
+                            userSelect: "none",
+                        }}
+                        >
+                        {isHovered && player.region}
+                        </div>
 
-                    <div style={styles.skinFrame}>
-                      <img
-                        src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
-                        alt={player.username}
-                        style={styles.skin}
-                      />
+                        <div style={styles.skinFrame}>
+                        <img
+                            src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
+                            alt={player.username}
+                            style={styles.skin}
+                        />
+                        </div>
+                        <span style={styles.username}>{player.username}</span>
+                        <img
+                        src={caretUp}
+                        alt="LT icon"
+                        style={{
+                            width: 25,
+                            height: 20,
+                            marginLeft: 6,
+                            filter:
+                            "invert(20%) sepia(45%) saturate(310%) hue-rotate(200deg) brightness(80%) contrast(85%)",
+                        }}
+                        />
                     </div>
-                    <span style={styles.username}>{player.username}</span>
-                    <img
-                      src={caretUp}
-                      alt="LT icon"
-                      style={{
-                        width: 25,
-                        height: 20,
-                        marginLeft: 6,
-                        filter:
-                          "invert(20%) sepia(45%) saturate(310%) hue-rotate(200deg) brightness(80%) contrast(85%)",
-                      }}
-                    />
-                  </div>
-                );
-              })}
+                    );
+                })}
             </div>
           );
         })}
@@ -517,8 +608,8 @@ const styles = {
     paddingTop: "2rem",
   },
   container: {
-    maxWidth: 1200,
-    minWidth: 1200,        // fixed width to match main container style
+    maxWidth: 1600,
+    minWidth: 1600,        // fixed width to match main container style
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
     backgroundColor: "#121821",
@@ -534,11 +625,11 @@ const styles = {
     WebkitOverflowScrolling: "touch",
   },
   strip: {
-    flex: "1 1 240px",     // fixed-ish width so 5 strips fit in 1200px with gaps
+    flex: "1 1 240px",     // fixed-ish width so 5 strips fit in 1600px with gaps (you may adjust this)
     borderRadius: 12,
     display: "flex",
     flexDirection: "column",
-    gap: 6,
+    gap: 3,
     overflow: "hidden",
   },
   tierEntry: {
@@ -590,77 +681,78 @@ const styles = {
     textOverflow: "ellipsis",
   },
   topCard: {
-  backgroundColor: "#121821",
-  border: "2px solid #1f2937",
-  borderRadius: 24,
-  paddingLeft: "2rem",
-  paddingRight: "2rem",
-  maxWidth: 1200,
-  minWidth: 1200,
-  display: "flex",
-  minHeight: 60,
-  justifyContent: "center",
-  alignItems: "center",
-  margin: "0 auto 2rem auto",
-  textAlign: "center",
-  position: "relative",
-},
-smptiersImage: {
-  width: 200,
-  height: 100,
-  userSelect: "none",
-  position: "absolute",
-  left: 0,
-},
-discordWrapper: {
-  display: "flex",
-  alignItems: "center",
-  cursor: "pointer",
-  justifyContent: "center",
-  position: "relative",
-},
-discordIcon: {
-  width: 30,
-  height: 30,
-  marginRight: 8,
-  userSelect: "none",
-},
-discordText: {
-  fontSize: 18,
-  fontWeight: "700",
-  color: "#e5e7eb",
-  userSelect: "none",
-  position: "relative",
-},
-discordPopup: {
-  position: "absolute",
-  top: "110%",
-  left: "50%",
-  transform: "translateX(-50%)",
-  backgroundColor: "#121821",
-  border: "2px solid #1f2937",
-  borderRadius: 24,
-  padding: "1rem 2rem",
-  whiteSpace: "nowrap",
-  zIndex: 1000,
-  userSelect: "none",
-},
-popupItem: {
-  display: "flex",
-  alignItems: "center",
-  marginBottom: 12,
-},
-popupIcon: {
-  width: 24,
-  height: 24,
-  marginRight: 12,
-  userSelect: "none",
-},
-popupLink: {
-  color: "#e5e7eb",
-  textDecoration: "none",
-  fontWeight: "700",
-  fontSize: 18,
-},
+    backgroundColor: "#121821",
+    border: "2px solid #1f2937",
+    borderRadius: 24,
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+    maxWidth: 1600,
+    minWidth: 1600,
+    display: "flex",
+    minHeight: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: "0 auto 2rem auto",
+    textAlign: "center",
+    position: "relative",
+  },
+  smptiersImage: {
+    width: 200,
+    height: 100,
+    userSelect: "none",
+    position: "absolute",
+    left: 0,
+  },
+  discordWrapper: {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    justifyContent: "center",
+    position: "relative",
+  },
+  discordIcon: {
+    width: 30,
+    height: 30,
+    marginRight: 8,
+    userSelect: "none",
+  },
+  discordText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#e5e7eb",
+    userSelect: "none",
+    position: "relative",
+  },
+  discordPopup: {
+    position: "absolute",
+    top: "110%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "#121821",
+    border: "2px solid #1f2937",
+    borderRadius: 24,
+    padding: "1rem 2rem",
+    whiteSpace: "nowrap",
+    zIndex: 1000,
+    userSelect: "none",
+  },
+  popupItem: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  popupIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
+    userSelect: "none",
+  },
+  popupLink: {
+    color: "#e5e7eb",
+    textDecoration: "none",
+    fontWeight: "700",
+    fontSize: 18,
+  },
 };
+
 

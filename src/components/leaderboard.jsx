@@ -528,8 +528,8 @@ const styles = {
     paddingTop: "2rem",
   },
   container: {
-    maxWidth: 1200,
-    minWidth: 1200,
+    maxWidth: 1600,
+    minWidth: 1600,
     margin: "0 auto 3rem auto",
     padding: "3rem 2rem 2rem",
     backgroundColor: "#121821",
@@ -555,7 +555,7 @@ const styles = {
     flexWrap: "nowrap",
   },
   ribbonHeaderCol: {
-    width: 150,
+    width: 200,
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -568,7 +568,7 @@ const styles = {
     paddingLeft: 14,
   },
   usernameCol: {
-    width: 280,
+    width: 400,
     fontWeight: 700,
     fontSize: 20,
     whiteSpace: "nowrap",
@@ -576,7 +576,7 @@ const styles = {
     textOverflow: "ellipsis",
   },
   regionCol: {
-    width: 200,
+    width: 250,
     fontWeight: 700,
     fontSize: 20,
     display: "flex",
@@ -584,7 +584,7 @@ const styles = {
     alignItems: "center",
   },
   tierCol: {
-    width: 300,
+    width: 400,
     fontWeight: 700,
     fontSize: 20,
     textAlign: "center",
@@ -606,7 +606,7 @@ const styles = {
   },
   ribbon: {
     position: "relative",
-    width: 150,
+    width: 200,
     height: 70,
     borderRadius: 8,
     overflow: "visible",
@@ -618,7 +618,7 @@ const styles = {
     position: "absolute",
     top: 0,
     left: 0,
-    width: 150,
+    width: 200,
     height: 70,
     borderRadius: 8,
     objectFit: "cover",
@@ -651,7 +651,7 @@ const styles = {
     userSelect: "none",
   },
   usernameColRow: {
-    width: 280,
+    width: 400,
     fontWeight: 800,
     fontSize: 25,
     whiteSpace: "nowrap",
@@ -674,7 +674,7 @@ const styles = {
     marginLeft: 5,
   },
   tierColRow: {
-    width: 300,
+    width: 400,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -745,15 +745,15 @@ const styles = {
     borderRadius: 24,
     paddingLeft: "2rem",
     paddingRight: "2rem",
-    maxWidth: 1200,
-    minWidth: 1200,
+    maxWidth: 1600,
+    minWidth: 1600,
     display: "flex",
     minHeight: 60,
-    justifyContent: "center", // Center the discord wrapper
+    justifyContent: "center",
     alignItems: "center",
     margin: "0 auto 2rem auto",
     textAlign: "center",
-    position: "relative", // IMPORTANT: to position the image absolutely
+    position: "relative",
   },
   discordWrapper: {
     display: "flex",
@@ -814,7 +814,7 @@ const styles = {
     width: 200,
     height: 100,
     userSelect: "none",
-    position: "absolute", // pin to left
+    position: "absolute",
     left: 0,
   },
 };

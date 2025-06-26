@@ -274,7 +274,7 @@ const styles = {
     margin: 0,
   },
   profileUsername: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "800",
     marginTop: 8,
     color: "#ffffff",
@@ -296,7 +296,7 @@ const styles = {
   },
   sectionHeader: {
     fontWeight: "700",
-    fontSize: 35,
+    fontSize: 30,
     textAlign: "left",
     marginBottom: 4,
     marginLeft: 4,
