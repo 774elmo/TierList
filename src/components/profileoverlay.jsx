@@ -254,8 +254,8 @@ export default function ProfileOverlay({ player, onClose }) {
               <div style={styles.overallText}>OVERALL</div>
               <div style={styles.overallPoints}>
                 {player.total_points !== undefined && player.total_points !== null
-                  ? `${player.total_points.toLocaleString()} pts`
-                  : "0 pts"}
+                  ? `${player.total_points.toLocaleString()} points`
+                  : "0 points"}
               </div>
             </div>
           </div>
