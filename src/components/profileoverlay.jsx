@@ -6,7 +6,7 @@ import rookieIcon from "../assets/rookie.svg";
 import combatNoviceIcon from "../assets/combat_novice.svg";
 import combatCadetIcon from "../assets/combat_cadet.svg";
 import combatSpecialistIcon from "../assets/combat_specialist.svg";
-import combatAceIcon from "../assets/combat_ace.svg";
+import combatAceIcon from "../assets/combat_ace.webp";
 import combatMasterIcon from "../assets/combat_master.webp";
 import combatGodIcon from "../assets/combat_god.webp";
 import shimmer1 from "../assets/1-shimmer.svg";
