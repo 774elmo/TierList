@@ -434,30 +434,43 @@ export default function Leaderboard() {
 
                 <div style={styles.usernameColRow} title={player.username}>
                 <div>{player.username}</div>
-                {titleObj && (
-                    <div
-                    style={{
-                        marginTop: 4,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        userSelect: "none",
-                        color: "#54627D",
-                        fontWeight: "600",
-                        fontSize: 20,
-                        // ensure it aligns left with username above:
-                        justifyContent: "flex-start",
-                    }}
-                    >
-                    <img
-                        src={titleObj.icon}
-                        alt={`${titleObj.title} icon`}
-                        style={{ width: 30, height: 30, objectFit: "contain" }}
-                        draggable={false}
-                    />
-                    <span>{titleObj.title}</span>
-                    </div>
-                )}
+                        {titleObj && (
+                        <div
+                            style={{
+                            marginTop: 4,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                            userSelect: "none",
+                            fontWeight: "600",
+                            fontSize: 20,
+                            justifyContent: "flex-start",
+                            }}
+                        >
+                            <img
+                            src={titleObj.icon}
+                            alt={`${titleObj.title} icon`}
+                            style={{ width: 30, height: 30, objectFit: "contain" }}
+                            draggable={false}
+                            />
+                            <span style={{ 
+                                color: "#90A1B9",
+                                fontSize: 18,
+                                fontWeight: 500,
+                                 }}
+                                 >
+                                    {titleObj.title}</span>
+                            <span style={{
+                                 color: "#384D6C",
+                                 fontSize: 18,
+                                 fontWeight: 500,
+                                  }}
+                                  >
+                            ({totalPoints.toLocaleString()} points)
+                            </span>
+                        </div>
+                        )}
+
                 </div>
 
               <div style={styles.regionCol}>
