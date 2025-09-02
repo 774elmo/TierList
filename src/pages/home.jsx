@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/pageheader";
 import GamemodeTabs from "../components/gamemodetabs";
 import SearchBar from "../components/searchbar";
 
-import SMPTiersImage from "../assets/smptiers.png"; // adjust if needed
+import ExTiersIcon from "../assets/extiers.webp"; // adjust if needed
 import HomeIcon from "../assets/home.svg";
 import RankingsIcon from "../assets/rankings.svg";
 import DiscordIcon from "../assets/discord.svg";
@@ -13,6 +13,7 @@ import { getGamemodeIcon } from "../components/gamemodeicons";
 
 export default function Home() {
   const navigate = useNavigate();
+  const discordRef = useRef(null);
   const [discordPopupOpen, setDiscordPopupOpen] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ export default function Home() {
   const blissLink = "https://discord.gg/WkTkYMUGsK";
 
   useEffect(() => {
-    fetch("https://api.lifestealpvp.xyz/api/v1/announcements")
+    fetch("https://api.extiers.xyz/api/v1/announcements")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch announcements");
         return res.json();
@@ -50,149 +51,189 @@ export default function Home() {
     setPopupAnnouncement(null);
   };
 
-  return (
-    <div style={styles.outerWrapper}>
-      {/* Top Card Header (copied exactly from Bliss) */}
-      <div style={styles.topCard}>
-        <img src={SMPTiersImage} alt="smptiers" style={styles.smptiersImage} />
-        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              color: "#ffffff",
-              fontWeight: 600,
-              fontSize: 18,
-              cursor: "pointer",
-              userSelect: "none",
-            }}
-            onClick={() => navigate("/posts")}
-          >
-            <img
-              src={HomeIcon}
-              alt="Home"
-              style={{
-                width: 30,
-                height: 30,
-                marginRight: 8,
-                filter: "invert(100%)",
-              }}
-              draggable={false}
-            />
-            Home
-          </div>
+return (
+  <div style={styles.outerWrapper}>
+    {/* Top Card */}
+    <div
+      style={{
+        ...styles.topCard,
+        display: "flex",
+        alignItems: "center",
+        position: "relative",
+      }}
+    >
+      {/* ExTiers Icon on the left */}
+      <img
+        src={ExTiersIcon}
+        alt="extiers"
+        style={{
+          ...styles.ExTiersIcon,
+          position: "absolute",
+          left: 50,
+          width: 50,
+          height: 50,
+        }}
+      />
 
-          <div
+      {/* Centered Home / Rankings / Discord */}
+      <div
+        style={{
+          display: "flex",
+          gap: 24,
+          alignItems: "center",
+          margin: "0 auto", // centers the group
+        }}
+      >
+        {/* Home */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            color: "#ffffff",
+            fontWeight: 600,
+            fontSize: 18,
+            cursor: "pointer",
+            userSelect: "none",
+          }}
+          onClick={() => navigate("/posts")}
+        >
+          <img
+            src={HomeIcon}
+            alt="Home"
             style={{
-              display: "flex",
-              alignItems: "center",
-              color: "#ffffff",
-              fontWeight: 600,
-              fontSize: 18,
-              cursor: "pointer",
-              userSelect: "none",
+              width: 30,
+              height: 30,
+              marginRight: 8,
+              filter: "invert(100%)",
             }}
-            onClick={() => navigate("/rankings/overall")}
-          >
-            <img
-              src={RankingsIcon}
-              alt="Rankings"
-              style={{
-                width: 30,
-                height: 30,
-                marginRight: 8,
-              }}
-              draggable={false}
-            />
-            Rankings
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              color: "#ffffff",
-              fontWeight: 600,
-              fontSize: 18,
-              cursor: "pointer",
-              position: "relative",
-              zIndex: 1000,
-              userSelect: "none",
-            }}
-            onClick={() => setDiscordPopupOpen(!discordPopupOpen)}
-          >
-            <img
-              src={DiscordIcon}
-              alt="Discord"
-              style={styles.discordIcon}
-              draggable={false}
-            />
-            Discords{" "}
-            <img
-              src={caretUp}
-              alt="caret up"
-              style={{
-                width: 15,
-                height: 15,
-                marginLeft: 6,
-                verticalAlign: "middle",
-                userSelect: "none",
-                filter: "invert(100%)",
-              }}
-              draggable={false}
-            />
-
-            {discordPopupOpen && (
-              <div
-                style={{
-                  ...styles.discordPopup,
-                  position: "absolute",
-                  top: "100%",
-                  right: 0,
-                  minWidth: 160,
-                  backgroundColor: "#1E293B",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  borderRadius: 8,
-                  padding: "12px 16px",
-                  marginTop: 4,
-                  zIndex: 1001,
-                }}
-              >
-                {[
-                  ["lifesteal", lifestealLink],
-                  ["infuse", infuseLink],
-                  ["glitch", glitchLink],
-                  ["bliss", blissLink],
-                  ["strength", strengthLink],
-                ].map(([mode, link]) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: 8,
-                      cursor: "pointer",
-                    }}
-                    key={mode}
-                  >
-                    <img
-                      src={getGamemodeIcon(mode)}
-                      alt={mode}
-                      style={{ width: 24, height: 24, marginRight: 12 }}
-                    />
-                    <a
-                      href={link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "#fff", textDecoration: "none", fontWeight: 600 }}
-                    >
-                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                    </a>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+            draggable={false}
+          />
+          Home
         </div>
+
+        {/* Rankings */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            color: "#ffffff",
+            fontWeight: 600,
+            fontSize: 18,
+            cursor: "pointer",
+            userSelect: "none",
+          }}
+          onClick={() => navigate("/rankings/overall")}
+        >
+          <img
+            src={RankingsIcon}
+            alt="Rankings"
+            style={{
+              width: 30,
+              height: 30,
+              marginRight: 8,
+            }}
+            draggable={false}
+          />
+          Rankings
+        </div>
+
+        {/* Discord */}
+        <div
+          ref={discordRef}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            color: "#ffffff",
+            fontWeight: 600,
+            fontSize: 18,
+            cursor: "pointer",
+            position: "relative",
+            zIndex: 1000,
+            userSelect: "none",
+          }}
+          onClick={() => setDiscordPopupOpen(!discordPopupOpen)}
+        >
+          <img src={DiscordIcon} alt="Discord" style={styles.discordIcon} draggable={false} />
+          Discords{" "}
+          <img
+            src={caretUp}
+            alt="caret up"
+            style={{
+              width: 15,
+              height: 15,
+              marginLeft: 6,
+              verticalAlign: "middle",
+              userSelect: "none",
+              filter: "invert(100%)",
+            }}
+            draggable={false}
+          />
+
+          {discordPopupOpen && (
+            <div
+              style={{
+                ...styles.discordPopup,
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                minWidth: 160,
+                backgroundColor: "#1E293B",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                borderRadius: 8,
+                padding: "12px 16px",
+                marginTop: 4,
+                zIndex: 1001,
+              }}
+            >
+              {[
+                ["lifesteal", lifestealLink],
+                ["infuse", infuseLink],
+                ["glitch", glitchLink],
+                ["bliss", blissLink],
+                ["strength", strengthLink],
+              ].map(([mode, link]) => (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 8,
+                    cursor: "pointer",
+                  }}
+                  key={mode}
+                >
+                  <img
+                    src={getGamemodeIcon(mode)}
+                    alt={mode}
+                    style={{ width: 24, height: 24, marginRight: 12 }}
+                  />
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#fff", textDecoration: "none", fontWeight: 600 }}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
+      </div>
+
+      {/* Right-aligned SearchBar */}
+      <div
+        style={{
+          position: "absolute",
+          right: 50,              // pushes it to the right side, same margin as the ExTiers icon
+          top: "50%",             // vertically centers
+          transform: "translateY(-50%)",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <SearchBar />
+      </div>
+      </div>
       </div>
 
       {/* Below TopCard: Big announcement card */}
