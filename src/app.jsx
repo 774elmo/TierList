@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import GamemodeRanking from "./pages/rankings/GamemodeRanking";
-import Overall from "./pages/rankings/overall";
+import Overall from "./pages/rankings/Overall";
 import DiscordPage from "./pages/discord/discord";
 import Posts from "./pages/posts/posts";
 
