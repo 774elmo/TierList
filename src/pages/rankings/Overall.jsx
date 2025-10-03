@@ -17,19 +17,13 @@
   import shimmer2 from "../../assets/2-shimmer.svg";
   import shimmer3 from "../../assets/3-shimmer.svg";
   import shimmerOther from "../../assets/other.svg";
+  import skin404 from "../../assets/skin-404.avif";
+
 
   import "../../css/Overall.css";
 
   const validGamemodes = [
-    "diamond_op",
-    "shieldless_smp",
-    "iron_pot",
-    "neth_sword",
-    "crossbow",
-    "spleef",
-    "ice",
-    "sumo",
-    "tnt",
+    "trident_mace",
   ];
 
   function regionColor(region) {
@@ -124,7 +118,7 @@
     }, []);
 
     function fetchLeaderboardData() {
-      const baseUrl = "https://api.extiers.xyz/api/v1/data";
+      const baseUrl = "https://api.tridentmace.xyz/api/v1/data";
       const url = gamemode === "overall" ? baseUrl : `${baseUrl}?gamemode=${gamemode}`;
       fetch(url)
         .then((res) => {
@@ -139,8 +133,14 @@
         })
         .catch(() => {
           if (!isMounted.current) return;
-          setError("Could not load leaderboard data.");
-          setLoading(false);
+          const cachedData = getCachedData(gamemode);
+          if (cachedData) {
+            setPlayers(cachedData);
+            setLoading(false);
+          } else {
+            setError("Could not load leaderboard data.");
+            setLoading(false);
+          }
         });
     }
 
@@ -180,12 +180,14 @@
         return;
       }
 
+      // Always try fresh data first
+      fetchLeaderboardData();
+
+      // Use cache only if API fails
       const cachedData = getCachedData(gamemode);
       if (cachedData) {
         setPlayers(cachedData);
         setLoading(false);
-      } else {
-        fetchLeaderboardData();
       }
 
       const interval = setInterval(() => fetchLeaderboardData(), 3600000);
@@ -274,6 +276,10 @@ return (
                       src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
                       alt={player.username}
                       className="skin-image"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null; // Prevent infinite loop
+                        e.currentTarget.src = skin404;  // Fallback image
+                      }}
                     />
                   </div>
 
@@ -370,6 +376,10 @@ return (
                   src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
                   alt={player.username}
                   className="skin-image"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null; // Prevent infinite loop
+                    e.currentTarget.src = skin404;  // Fallback image
+                  }}
                 />
               </div>
 

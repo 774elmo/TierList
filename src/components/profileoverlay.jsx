@@ -15,6 +15,8 @@ import shimmer3 from "../assets/3-shimmer.svg";
 import shimmerOther from "../assets/other.svg";
 import namemcIcon from "../assets/namemc.png";
 import leaveIcon from "../assets/leave.png";
+import skin404 from "../assets/skin-404.avif";
+
 
 import "../css/ProfileOverlay.css";
 
@@ -32,7 +34,7 @@ function getTitleInfo(points) {
   return titleInfo.find(info => points >= info.minPoints && points <= info.maxPoints) || titleInfo[0];
 }
 
-const validGamemodes = ["diamond_op","shieldless_smp","iron_pot","neth_sword","crossbow","spleef","ice","sumo","tnt"];
+const validGamemodes = ["trident_mace"];
 
 function getTierColors(tierName) {
   const tierMap = { 
@@ -59,7 +61,7 @@ export default function ProfileOverlay({ playerUuid, onClose }) {
     async function fetchPlayer() {
       try {
         setLoading(true);
-        const res = await fetch("https://api.extiers.xyz/api/v1/data");
+        const res = await fetch("https://api.tridentmace.xyz/api/v1/data");
         const allPlayers = await res.json();
         setPlayerData(allPlayers.find(p => p.uuid === playerUuid));
       } catch (err) {
@@ -83,7 +85,15 @@ export default function ProfileOverlay({ playerUuid, onClose }) {
 
         {/* Skin */}
         <div className="skinOutline">
-          <img src={`https://render.crafty.gg/3d/bust/${playerData.uuid}`} alt={playerData.username} className="profileSkin" />
+          <img
+            src={`https://render.crafty.gg/3d/bust/${playerData.uuid}`}
+            alt={playerData.username}
+            className="profileSkin"
+            onError={(e) => {
+              e.currentTarget.onerror = null; // Prevent infinite loop
+              e.currentTarget.src = skin404;  // Fallback image
+            }}
+          />
         </div>
 
         {/* Username */}

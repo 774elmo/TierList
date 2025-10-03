@@ -9,19 +9,12 @@ import HT2 from "../../assets/HT2.webp";
 import HT3 from "../../assets/HT3.webp";
 import caretDoubleUp from "../../assets/caret-double-up.svg";
 import caretUp from "../../assets/caret-up.svg";
+import skin404 from "../../assets/skin-404.avif";
 
 import "../../css/GamemodeRanking.css";
 
 const validGamemodes = [
-  "diamond_op",
-  "shieldless_smp",
-  "iron_pot",
-  "neth_sword",
-  "crossbow",
-  "spleef",
-  "ice",
-  "sumo",
-  "tnt",
+  "trident_mace",
 ];
 
 const topStripColors = ["#41361B", "#343843", "#352620", "#161E2A", "#161E2A"];
@@ -96,8 +89,8 @@ export default function GamemodeRanking() {
         setLoading(true);
 
         const startTime = Date.now();
-        const gamemodeUrl = `https://api.extiers.xyz/api/v1/data?gamemode=${gamemode}`;
-        const overallUrl = "https://api.extiers.xyz/api/v1/data";
+        const gamemodeUrl = `https://api.tridentmace.xyz/api/v1/data?gamemode=${gamemode}`;
+        const overallUrl = "https://api.tridentmace.xyz/api/v1/data";
 
         const [dataGamemode, dataOverall] = await Promise.all([
           cachedFetch(gamemodeUrl),
@@ -205,6 +198,10 @@ export default function GamemodeRanking() {
                           src={`https://render.crafty.gg/3d/bust/${player.uuid}`}
                           alt={player.username}
                           className="skin"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null; // Prevent infinite loop
+                            e.currentTarget.src = skin404;   // Use imported fallback
+                          }}
                         />
                       </div>
 

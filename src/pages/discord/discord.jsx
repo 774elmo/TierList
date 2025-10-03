@@ -4,15 +4,7 @@ import "../../css/Overall.css"; // reusing the outer-wrapper, container, etc.
 
 export default function DiscordPage() {
   const discordLinks = [
-    { mode: "Diamond OP", url: "https://discord.gg/diamond_op" },
-    { mode: "Shieldless SMP", url: "https://discord.gg/shieldless_smp" },
-    { mode: "Neth Sword", url: "https://discord.gg/neth_sword" },
-    { mode: "Iron Pot", url: "https://discord.gg/iron_pot" },
-    { mode: "TNT", url: "https://discord.gg/tnt" },
-    { mode: "Sumo", url: "https://discord.gg/sumo" },
-    { mode: "Spleef", url: "https://discord.gg/spleef" },
-    { mode: "Crossbow", url: "https://discord.gg/crossbow" },
-    { mode: "Ice", url: "https://discord.gg/ice" },
+    { mode: "Trident Mace", url: "https://discord.gg/tridentmace" },
   ];
 
   return (

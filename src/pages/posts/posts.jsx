@@ -8,7 +8,7 @@ export default function Posts() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://api.extiers.xyz/api/v1/announcements")
+    fetch("https://api.tridentmace.xyz/api/v1/announcements")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch announcements");
         return res.json();

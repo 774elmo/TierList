@@ -24,14 +24,8 @@ export default function Home() {
   // Track hovered announcement id for inline hover effect
   const [hoveredId, setHoveredId] = useState(null);
 
-  const lifestealLink = "https://discord.gg/lifestealpvp";
-  const strengthLink = "https://discord.gg/W58sv4nrRS";
-  const infuseLink = "https://discord.gg/HF3m4b3HQF";
-  const glitchLink = "https://discord.gg/G2BJc8NfDd";
-  const blissLink = "https://discord.gg/WkTkYMUGsK";
-
   useEffect(() => {
-    fetch("https://api.extiers.xyz/api/v1/announcements")
+    fetch("https://api.tridentmace.xyz/api/v1/announcements")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch announcements");
         return res.json();

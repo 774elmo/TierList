@@ -23,7 +23,7 @@ export default function SearchBar() {
 
     try {
       const res = await fetch(
-        `https://api.extiers.xyz/api/v1/data?search=${encodeURIComponent(
+        `https://api.tridentmace.xyz/api/v1/data?search=${encodeURIComponent(
           searchText.trim()
         )}`
       );
@@ -36,7 +36,20 @@ export default function SearchBar() {
         startErrorTimeout();
       } else {
         const data = await res.json();
-        setPlayerData(data[0] || data);
+
+        // 🔹 Force exact match (case-insensitive)
+        const exactMatch = Array.isArray(data)
+          ? data.find(
+              (p) => p.username.toLowerCase() === searchText.trim().toLowerCase()
+            )
+          : data;
+
+        if (exactMatch) {
+          setPlayerData(exactMatch);
+        } else {
+          setError("Player not found");
+          startErrorTimeout();
+        }
       }
     } catch {
       setError("Failed to fetch player data");

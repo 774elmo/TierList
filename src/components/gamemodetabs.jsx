@@ -5,27 +5,11 @@ import overallIcon from "../assets/overall.svg";
 import "../css/GamemodeTabs.css";
 
 const gamemodes = [
-  "diamond_op",
-  "shieldless_smp",
-  "iron_pot",
-  "neth_sword",
-  "crossbow",
-  "spleef",
-  "ice",
-  "sumo",
-  "tnt",
+  "trident_mace",
 ];
 
 const displayNames = {
-  diamond_op: "Diamond OP",
-  shieldless_smp: "Shieldless SMP",
-  iron_pot: "Iron Pot",
-  neth_sword: "Neth Sword",
-  crossbow: "Crossbow",
-  spleef: "Spleef",
-  ice: "Ice",
-  sumo: "Sumo",
-  tnt: "TNT",
+  trident_mace: "Trident Mace",
 };
 
 export default function GamemodeTabs() {
